@@ -12,7 +12,7 @@ def send_email(user, code):
         "to": [receiver],
         "subject": f"🚖 CampusCab - Tu código de verificación es {code}",
         "html": f"""
-            <h2>Este es tu código de verificación 🔑</h2>
+            <h2>{user.first_name}, este es tu código de verificación 🔑</h2>
             <p>Ingresa el siguiente código en la aplicación para verificar tu cuenta: <b>{code}</b></p>
             <h5><i>No compartas este código con nadie. Si no solicitaste este código, ignora este mensaje.</i></h5>
         """
