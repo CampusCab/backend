@@ -4,19 +4,24 @@ from string import ascii_uppercase, digits
 from django.conf import settings
 
 def send_email(user, code):
-
-    resend.api_key = settings.RESEND_API_KEY
+    sender = settings.RESEND_DOMAIN
+    receiver = user.email
 
     params = {
-        "from": "CampusCab",
-        "to": user.email,
-        "subject": f"CampusCab 🚖 - Tu código de verificación es: {code}",
+        "from": f"CampusCab <{sender}>",
+        "to": [receiver],
+        "subject": f"🚖 CampusCab - Tu código de verificación es {code}",
+        "html": f"""
+            <h2>Este es tu código de verificación 🔑</h2>
+            <p>Ingresa el siguiente código en la aplicación para verificar tu cuenta: <b>{code}</b></p>
+            <h5><i>No compartas este código con nadie. Si no solicitaste este código, ignora este mensaje.</i></h5>
+        """
     }
 
     try:
         resend.Emails.send(params)
         return True
-    except Exception:
+    except Exception as e:
         return False
 
 

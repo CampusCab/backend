@@ -155,5 +155,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.User"
 
-RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
 RESEND_DOMAIN = os.environ.get("RESEND_DOMAIN")

@@ -2,11 +2,12 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as gtl
+from uuid import uuid4 as uuid
 
 class UserManager(BaseUserManager):
 
     def create_user(self, email, password, **extra_fields):
-        if not email: raise ValueError(gtl("The email must be set"))
+        if not email: raise ValueError(gtl("Ingresa un correo válido"))
 
         user = self.model(email = email, **extra_fields)
         user.set_password(password)
@@ -19,18 +20,18 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
 
-        if extra_fields.get("is_staff") is not True: raise ValueError(gtl("Superuser must have is_staff = True."))
-        if extra_fields.get("is_superuser") is not True: raise ValueError(gtl("Superuser must have is_superuser = True."))
+        if extra_fields.get("is_staff") is not True: raise ValueError(gtl("El superusuario debe tener is_staff = True."))
+        if extra_fields.get("is_superuser") is not True: raise ValueError(gtl("El superusuario debe tener is_superuser = True."))
 
         return self.create_user(email, password, **extra_fields)
 
 
 class User(AbstractUser):
 
-    id = models.BigAutoField(
+    id = models.UUIDField(
         primary_key = True,
         auto_created = True,
-        serialize = False,
+        default = uuid,
         verbose_name = "ID",
         editable = False,
     )

@@ -13,7 +13,7 @@ class LoginSerializer(Serializer):
         user_auth = authenticate(**data)
         user_active = User.objects.filter(email = data["email"], is_active = True).exists()
 
-        if not user_active: raise serializers.ValidationError("Please verify your email to login")
-        if not user_auth: raise serializers.ValidationError("Incorrect Credentials")
+        if not user_active: raise serializers.ValidationError("Por favor verifica tu cuenta")
+        if not user_auth: raise serializers.ValidationError("Credenciales incorrectas")
 
         return user_auth

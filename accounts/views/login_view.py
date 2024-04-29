@@ -10,7 +10,7 @@ from ..serializers.user_serializer import UserSerializer
 def login(request):
     serializer = LoginSerializer(data = request.data)
 
-    if serializer.is_valid(raise_exception=True):
+    if serializer.is_valid(raise_exception = True):
         user = serializer.validated_data
         serializer = UserSerializer(user)
         tokens: dict[str, str] = get_tokens_for_user(user)
