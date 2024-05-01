@@ -28,11 +28,10 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
 
-    id = models.UUIDField(
-        primary_key = True,
+    id = models.BigAutoField(
         auto_created = True,
-        default = uuid,
-        verbose_name = "ID",
+        primary_key = True,
+        serialize = False,
         editable = False,
     )
 
