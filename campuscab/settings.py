@@ -118,12 +118,20 @@ ROOT_URLCONF = "campuscab.urls"
 
 WSGI_APPLICATION = "campuscab.wsgi.application"
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default='postgresql://postgres:postgres@localhost:5432/mysite',
-        conn_max_age=600
-    )
-}
+if DEBUG:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default='postgresql://postgres:postgres@localhost:5432/campuscab',
+            conn_max_age=600
+        )
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
