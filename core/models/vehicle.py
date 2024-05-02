@@ -3,7 +3,7 @@ from accounts.models import User
 
 class Vehicle(models.Model):
     owner = models.ForeignKey(User,on_delete = models.CASCADE)
-    license = models.CharField(max_length = 6)
+    license = models.CharField(max_length = 6, unique = True)
     model = models.CharField(max_length = 255)
     max_passengers = models.IntegerField()
 

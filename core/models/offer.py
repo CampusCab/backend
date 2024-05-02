@@ -6,7 +6,10 @@ class Offer(models.Model):
     amount = models.IntegerField()
     accepted = models.BooleanField(default = False)
     finished = models.BooleanField(default = False)
-    stars = models.IntegerField()
+    stars = models.IntegerField(null = True, blank = True)
+
+    def clean(self):
+        if self.amount <= 0: raise ValueError("El monto debe ser mayor o igual a cero.")
 
     def accept(self):
         if self.accepted: raise ValueError("La oferta ya ha sido aceptada.")

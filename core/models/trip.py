@@ -31,8 +31,11 @@ class Trip(models.Model):
     def finish(self):
         if self.finished: raise ValueError("El viaje ya ha sido finalizado.")
 
+        for offer in self.offer_set.all():
+            if not offer.finished: raise ValueError("Aún hay ofertas sin finalizar.")
+
         self.finished = True
         self.save()
 
     def __str__(self):
-        return f"{self.id} - {self.origin} to {self.destination} @ {self.start_time}"
+        return f"{self.id} - from {self.origin} at {self.start_time}"

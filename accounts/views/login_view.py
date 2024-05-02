@@ -10,14 +10,23 @@ from ..serializers.user_serializer import UserSerializer
 def login(request):
     serializer = LoginSerializer(data = request.data)
 
-    if serializer.is_valid(raise_exception = True):
-        user = serializer.validated_data
-        serializer = UserSerializer(user)
-        tokens: dict[str, str] = get_tokens_for_user(user)
-        data = serializer.data
-        data["tokens"] = tokens
+    if not serializer.is_valid():
+        return JsonResponse(data = serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
-        return JsonResponse(data = data, status = status.HTTP_200_OK)
+    user = serializer.validated_data
+
+    if not user.is_active:
+        return JsonResponse(data = {"error": "User is not active"}, status = status.HTTP_400_BAD_REQUEST)
+
+    serializer = UserSerializer(user)
+    tokens: dict[str, str] = get_tokens_for_user(user)
+
+    data = {
+        "user": serializer.data,
+        "tokens": tokens
+    }
+
+    return JsonResponse(data, status = status.HTTP_200_OK)
 
 
 
