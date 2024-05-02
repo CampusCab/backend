@@ -20,11 +20,13 @@ class CustomUserAdmin(admin.ModelAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
 
-    list_display = ("id", "email", "phone", "first_name", "last_name", "is_staff", "is_active", "verification_code")
-    list_filter = ("is_staff",)
+    list_display = ("id", "email", "phone", "first_name", "last_name", "is_staff", "is_active", "currently_driver", "currently_passenger")
+    list_filter = ("is_staff", "currently_driver", "currently_passenger")
 
     fieldsets = (
-        ("Information", {"fields": ("email", "phone", "password", "first_name", "last_name")}),
+        ("Information", {"fields": ("email", "phone", "password", "first_name", "last_name", "gender", "verification_code")}),
+        ("Driver", {"fields": ("total_stars_driver", "total_trips_driver", "rating_driver", "currently_driver", "current_trip_driver")}),
+        ("Passenger", {"fields": ("total_stars_passenger", "total_trips_passenger", "rating_passenger", "currently_passenger", "current_offer_passenger")}),
         ("Permissions", {"fields": ("is_staff", "is_active", "user_permissions")}),
     )
 
