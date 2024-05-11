@@ -1,6 +1,7 @@
 from django.db import models
 from .trip import Trip
 
+
 class Offer(models.Model):
     trip = models.ForeignKey(Trip, on_delete = models.CASCADE)
     amount = models.IntegerField()

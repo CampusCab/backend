@@ -1,10 +1,9 @@
-# Vehicle serializer
-
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
 from ..models.vehicle import Vehicle
 from accounts.models.user import User
+
 
 class VehicleSerializer(ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(queryset = User.objects.all(), write_only = True)
