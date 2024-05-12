@@ -9,7 +9,7 @@ from .views.login_view import login
 urlpatterns = [
     path("register/", register, name = "register"),
     path("verify/", verify_account, name = "verify"),
-    path("resend/", resend_code, name = "resend"),
+    path("resend_code/", resend_code, name = "resend"),
     path("login/", login, name = "login"),
     path("login/refresh/", refresh.as_view(), name = "refresh"),
 ]

@@ -22,13 +22,19 @@ def get_current_trip(request):
 def get_available_trips(request):
     return JsonResponse({"message": "Get available trips"}, status=status.HTTP_200_OK)
 
-# Aceptar oferta
+# Enviar oferta para un viaje
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def send_offer(request):
+    return JsonResponse({"message": "Send offer"}, status=status.HTTP_200_OK)
+
+# Aceptar oferta como conductor
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def accept_offer(request):
     return JsonResponse({"message": "Accept offer"}, status=status.HTTP_200_OK)
 
-# Rechazar oferta
+# Rechazar oferta como conductor
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def reject_offer(request):
@@ -39,6 +45,12 @@ def reject_offer(request):
 @permission_classes([IsAuthenticated])
 def finish_trip_as_passenger(request):
     return JsonResponse({"message": "Finish trip as passenger"}, status=status.HTTP_200_OK)
+
+# Cancelar viaje siendo pasajero
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def cancel_trip_as_passenger(request):
+    return JsonResponse({"message": "Cancel trip as passenger"}, status=status.HTTP_200_OK)
 
 # Eliminar un usuario de un viaje y calificar al usuario. Si ya no hay pasajeros, terminar el viaje
 @api_view(["POST"])
