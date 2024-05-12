@@ -3,6 +3,7 @@ from random import choices
 from string import ascii_uppercase, digits
 from django.conf import settings
 
+
 def send_email(user, code):
     sender = settings.RESEND_DOMAIN
     receiver = user.email

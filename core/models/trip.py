@@ -2,7 +2,6 @@ from django.utils import timezone
 from django.db import models
 from .vehicle import Vehicle
 
-
 ALLOWED_PLACES = ["Campus El Volador", "Campus Del Río", "Campus Robledo"]
 
 

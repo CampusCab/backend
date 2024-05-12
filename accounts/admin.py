@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 from .models import User
 
+
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
@@ -32,5 +33,6 @@ class CustomUserAdmin(admin.ModelAdmin):
 
     search_fields = ("email", "phone", "first_name", "last_name")
     ordering = ("id",)
+
 
 admin.site.register(User, CustomUserAdmin)

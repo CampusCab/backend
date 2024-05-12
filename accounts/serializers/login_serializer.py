@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from ..models.user import User
 
+
 class LoginSerializer(Serializer):
 
     email = serializers.CharField()
