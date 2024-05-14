@@ -4,7 +4,9 @@ from .views import vehicle_views, trip_views
 
 vehicle_patterns = [
     path('vehicles/', vehicle_views.get_user_vehicles, name='get_user_vehicles'),
-    path('vehicles/create', vehicle_views.create_vehicle, name='create_vehicle')
+    path('vehicles/<int:vehicle_id>', vehicle_views.get_vehicle, name='get_vehicle'),
+    path('vehicles/create', vehicle_views.create_vehicle, name='create_vehicle'),
+    path('vehicles/update/<int:vehicle_id>', vehicle_views.update_vehicle, name='update_vehicle')
 ]
 
 general_trip_patterns = [
