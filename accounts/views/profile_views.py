@@ -22,13 +22,11 @@ def get_profile(request):
     return JsonResponse(data, status=status.HTTP_201_CREATED)
 
 
-@api_view(["PATCH", "PUT"])
+@api_view(["PATCH"])
 @permission_classes([IsAuthenticated])
 def update_profile(request):
     user = request.user
-
-    partial = request.method == "PATCH"
-    user_serializer = UserSerializer(user, data=request.data, partial=partial)
+    user_serializer = UserSerializer(user, data=request.data, partial=True)
 
     if user_serializer.is_valid():
         user_serializer.save()
