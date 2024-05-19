@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import User
-from ..models import Vehicle, Trip
+from ..models import Vehicle, Trip, Offer
 from ..serializers.offer_serializer import OfferSerializer
 from ..serializers.trip_serializer import TripSerializer
 
@@ -89,9 +89,9 @@ def get_driver_trips(request):
 
     for trip in trips:
         offers = trip.offer_set.all()
-
         for offer in offers:
-            total_collected += offer.ammount
+            if offer.accepted:
+                total_collected += offer.ammount
 
     serializer = TripSerializer(trips, many=True)
 
@@ -134,15 +134,82 @@ def send_offer(request, trip_id):
 # Aceptar oferta como conductor
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def accept_offer(request):
-    return JsonResponse({"message": "Accept offer"}, status=status.HTTP_200_OK)
+def accept_offer(request, trip_id, offer_id):
+    user: User = request.user
+
+    if not user.has_active_trip():
+        return JsonResponse(
+            {"message": "User does not have an active trip"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if not user.currently_driver or user.current_trip_driver is None:
+        return JsonResponse(
+            {"message": "User is not a driver right now"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if user.current_trip_driver.id != trip_id:
+        return JsonResponse(
+            {"message": "User is not the driver of this trip"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        offer = user.current_trip_driver.offer_set.get(id=offer_id)
+    except Offer.DoesNotExist:
+        return JsonResponse(
+            {"message": "Offer does not exist"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        offer.accept()
+    except ValueError as e:
+        return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = OfferSerializer(offer)
+    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
 
 # Rechazar oferta como conductor
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def reject_offer(request):
-    return JsonResponse({"message": "Reject offer"}, status=status.HTTP_200_OK)
+def reject_offer(request, trip_id, offer_id):
+    user: User = request.user
+
+    if not user.has_active_trip():
+        return JsonResponse(
+            {"message": "User does not have an active trip"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if not user.currently_driver or user.current_trip_driver is None:
+        return JsonResponse(
+            {"message": "User is not a driver right now"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if user.current_trip_driver.id != trip_id:
+        return JsonResponse(
+            {"message": "User is not the driver of this trip"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        offer = user.current_trip_driver.offer_set.get(id=offer_id)
+    except Offer.DoesNotExist:
+        return JsonResponse(
+            {"message": "Offer does not exist"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        offer.reject()
+    except ValueError as e:
+        return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    return JsonResponse({"message": "Offer rejected"}, status=status.HTTP_200_OK)
 
 
 # Terminar viaje siendo pasajero y calificar al conductor
@@ -151,15 +218,6 @@ def reject_offer(request):
 def finish_trip_as_passenger(request):
     return JsonResponse(
         {"message": "Finish trip as passenger"}, status=status.HTTP_200_OK
-    )
-
-
-# Cancelar viaje siendo pasajero
-@api_view(["POST"])
-@permission_classes([IsAuthenticated])
-def cancel_trip_as_passenger(request):
-    return JsonResponse(
-        {"message": "Cancel trip as passenger"}, status=status.HTTP_200_OK
     )
 
 

@@ -1,4 +1,6 @@
 from django.db import models
+
+from accounts.models import User
 from .trip import Trip
 
 
@@ -21,6 +23,19 @@ class Offer(models.Model):
 
         self.accepted = True
         self.save()
+
+    def reject(self):
+        if self.accepted:
+            raise ValueError("La oferta ya ha sido aceptada.")
+        if self.finished:
+            raise ValueError("La oferta ya ha sido finalizada.")
+
+        user = User.objects.get(current_offer_passenger_id=self.id)
+        user.current_offer_passenger = None
+        user.currently_passenger = False
+        user.save()
+
+        self.delete()
 
     def finish(self, stars):
         if not self.accepted:

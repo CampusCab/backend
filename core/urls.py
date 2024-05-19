@@ -23,12 +23,12 @@ current_trip_patterns = [
         name="send_offer"
     ),
     path(
-        "trips/<int:trip_id>/accept",
+        "trips/<int:trip_id>/accept/<int:offer_id>",
         trip_views.accept_offer,
         name="accept_offer"
     ),
     path(
-        "trips/<int:trip_id>/reject",
+        "trips/<int:trip_id>/reject/<int:offer_id>",
         trip_views.reject_offer,
         name="reject_offer"
     ),
@@ -36,11 +36,6 @@ current_trip_patterns = [
         "trips/<int:trip_id>/finish",
         trip_views.finish_trip_as_passenger,
         name="finish_trip_as_passenger",
-    ),
-    path(
-        "trips/<int:trip_id>/cancel",
-        trip_views.cancel_trip_as_passenger,
-        name="cancel_trip_as_passenger",
     ),
     path(
         "trips/<int:trip_id>/remove/<int:user_id>",
