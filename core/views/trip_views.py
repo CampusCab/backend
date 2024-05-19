@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import User
-from ..models import Trip, Vehicle
+from ..models import Vehicle
 from ..serializers.trip_serializer import TripSerializer
 
 
@@ -115,7 +115,8 @@ def remove_user_from_trip(request):
     return JsonResponse({"message": "Remove user from trip"}, status=status.HTTP_200_OK)
 
 
-# Conseguir todos los viajes en los que el usuario ha sido conductor, total recogido y deuda con la plataforma
+# Conseguir todos los viajes en los que el usuario ha
+# sido conductor, total recogido y deuda con la plataforma
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_driver_trips(request):
