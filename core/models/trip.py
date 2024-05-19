@@ -48,17 +48,27 @@ class Trip(models.Model):
         if self.finished:
             raise ValueError("El viaje ya ha sido finalizado.")
 
+        offer_errors = []
         for offer in self.offer_set.all():
 
             if not offer.finished:
-                raise ValueError(f"Aún hay ofertas sin finalizar ({offer.id})")
-
-            if offer.stars_to_user is None:
-                raise ValueError(
-                    f"Aún no se ha calificado a un usuario (Oferta: {offer.id})"
+                offer_errors.append(
+                    f"El viaje aún no ha sido finalizado por el usuario (Oferta: {offer.id})"
                 )
 
+            if offer.stars_to_user is None:
+                offer_errors.append(
+                    f"El usuario no ha calificado el viaje (Oferta: {offer.id})"
+                )
+
+        if offer_errors:
+            raise ValueError(offer_errors)
+
         self.finished = True
+        self.vehicle.owner.current_trip_driver = None
+        self.vehicle.owner.currently_driver = False
+
+        self.vehicle.owner.save()
         self.save()
 
     def __str__(self):
