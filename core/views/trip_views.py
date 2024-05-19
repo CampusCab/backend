@@ -159,9 +159,6 @@ def get_driver_trips(request):
     user: User = request.user
 
     trips = Trip.objects.filter(vehicle__owner__id=user.id, finished=True)
-
-    # Each trip has 0 to n offers, each one has a ammount. Get the total amount of all offers
-
     total_collected = 0
 
     for trip in trips:
@@ -172,8 +169,5 @@ def get_driver_trips(request):
 
     serializer = TripSerializer(trips, many=True)
 
-    data = {
-        "total_collected": total_collected,
-        "trips": serializer.data
-    }
+    data = {"total_collected": total_collected, "trips": serializer.data}
     return JsonResponse(data, status=status.HTTP_200_OK)
