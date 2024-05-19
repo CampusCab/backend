@@ -156,4 +156,24 @@ def remove_user_from_trip(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_driver_trips(request):
-    return JsonResponse({"message": "Get driver trips"}, status=status.HTTP_200_OK)
+    user: User = request.user
+
+    trips = Trip.objects.filter(vehicle__owner__id=user.id, finished=True)
+
+    # Each trip has 0 to n offers, each one has a ammount. Get the total amount of all offers
+
+    total_collected = 0
+
+    for trip in trips:
+        offers = trip.offer_set.all()
+
+        for offer in offers:
+            total_collected += offer.ammount
+
+    serializer = TripSerializer(trips, many=True)
+
+    data = {
+        "total_collected": total_collected,
+        "trips": serializer.data
+    }
+    return JsonResponse(data, status=status.HTTP_200_OK)
