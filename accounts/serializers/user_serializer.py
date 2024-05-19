@@ -7,10 +7,16 @@ from ..models.user import User
 
 class UserSerializer(ModelSerializer):
     # Required fields
-    email = serializers.EmailField(error_messages={"invalid": "Ingresa un correo válido"})
-    phone = serializers.CharField(error_messages={"invalid": "Ingresa un número de teléfono válido"})
+    email = serializers.EmailField(
+        error_messages={"invalid": "Ingresa un correo válido"}
+    )
+    phone = serializers.CharField(
+        error_messages={"invalid": "Ingresa un número de teléfono válido"}
+    )
     first_name = serializers.CharField(error_messages={"required": "Ingresa tu nombre"})
-    last_name = serializers.CharField(error_messages={"required": "Ingresa tu apellido"})
+    last_name = serializers.CharField(
+        error_messages={"required": "Ingresa tu apellido"}
+    )
     gender = serializers.CharField(required=False)
 
     # Write only fields

@@ -5,9 +5,9 @@ from django.utils.translation import gettext_lazy as gtl
 
 
 class UserManager(BaseUserManager):
-
     def create_user(self, email, password, **extra_fields):
-        if not email: raise ValueError(gtl("Ingresa un correo válido"))
+        if not email:
+            raise ValueError(gtl("Ingresa un correo válido"))
 
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
@@ -20,16 +20,18 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
 
-        if extra_fields.get("is_staff") is not True: raise ValueError(
-            gtl("El superusuario debe tener is_staff = True."))
-        if extra_fields.get("is_superuser") is not True: raise ValueError(
-            gtl("El superusuario debe tener is_superuser = True."))
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError(gtl("El superusuario debe tener is_staff = True."))
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError(gtl("El superusuario debe tener is_superuser = True."))
 
         return self.create_user(email, password, **extra_fields)
 
 
 class User(AbstractUser):
-    id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, editable=False)
+    id = models.BigAutoField(
+        auto_created=True, primary_key=True, serialize=False, editable=False
+    )
     email = models.EmailField(blank=False, unique=True, max_length=255)
     phone = models.CharField(blank=False, unique=True, max_length=20)
     first_name = models.CharField(blank=False, max_length=50)
@@ -47,7 +49,7 @@ class User(AbstractUser):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name="driver"
+        related_name="driver",
     )
 
     total_stars_passenger = models.IntegerField(default=0)
@@ -59,7 +61,7 @@ class User(AbstractUser):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name="passenger"
+        related_name="passenger",
     )
 
     # Remove username field and set email as the USERNAME_FIELD
@@ -69,7 +71,8 @@ class User(AbstractUser):
     objects = UserManager()
 
     def verify(self, code):
-        if self.verification_code != code: return False
+        if self.verification_code != code:
+            return False
 
         self.is_active = True
         self.verification_code = None
@@ -92,7 +95,8 @@ class User(AbstractUser):
         self.save()
 
     def rate_as_driver(self, stars):
-        if not self.currently_driver: raise ValueError("El usuario no es un conductor ahora mismo.")
+        if not self.currently_driver:
+            raise ValueError("El usuario no es un conductor ahora mismo.")
 
         self.total_stars_driver += stars
         self.total_trips_driver += 1
@@ -100,7 +104,8 @@ class User(AbstractUser):
         self.save()
 
     def rate_as_passenger(self, stars):
-        if not self.currently_passenger: raise ValueError("El usuario no es un pasajero ahora mismo.")
+        if not self.currently_passenger:
+            raise ValueError("El usuario no es un pasajero ahora mismo.")
 
         self.total_stars_passenger += stars
         self.total_trips_passenger += 1

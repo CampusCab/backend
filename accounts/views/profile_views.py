@@ -13,7 +13,8 @@ def get_profile(request):
     user_serializer = UserSerializer(user)
 
     vehicles = list(user.vehicle_set.values())
-    for vehicle in vehicles: vehicle.pop("owner_id")
+    for vehicle in vehicles:
+        vehicle.pop("owner_id")
 
     data = user_serializer.data
     data["vehicles"] = vehicles

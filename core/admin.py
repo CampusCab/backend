@@ -9,7 +9,14 @@ class VehicleAdmin(admin.ModelAdmin):
 
 
 class TripAdmin(admin.ModelAdmin):
-    list_display = ("vehicle", "origin", "destination", "start_time", "description", "finished")
+    list_display = (
+        "vehicle",
+        "origin",
+        "destination",
+        "start_time",
+        "description",
+        "finished",
+    )
     search_fields = ("vehicle__license", "origin", "destination", "description")
     ordering = ("start_time",)
 
