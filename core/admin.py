@@ -3,13 +3,14 @@ from .models import Vehicle, Trip, Offer
 
 
 class VehicleAdmin(admin.ModelAdmin):
-    list_display = ("license", "owner", "model", "max_passengers")
+    list_display = ("id", "license", "owner", "model", "max_passengers")
     search_fields = ("owner__email", "license", "model")
     ordering = ("owner",)
 
 
 class TripAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "vehicle",
         "origin",
         "destination",
@@ -22,7 +23,7 @@ class TripAdmin(admin.ModelAdmin):
 
 
 class OfferAdmin(admin.ModelAdmin):
-    list_display = ("trip", "amount", "accepted", "finished", "stars")
+    list_display = ("id", "trip", "amount", "accepted", "finished", "stars_to_user")
     search_fields = ("trip__origin", "trip__destination")
     ordering = ("trip",)
 

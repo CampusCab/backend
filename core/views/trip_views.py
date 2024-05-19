@@ -15,8 +15,7 @@ def create_trip(request):
 
     if not request.data.get("vehicle"):
         return JsonResponse(
-            {"message": "Vehicle ID is required"},
-            status=status.HTTP_400_BAD_REQUEST
+            {"message": "Vehicle ID is required"}, status=status.HTTP_400_BAD_REQUEST
         )
 
     try:
@@ -24,7 +23,7 @@ def create_trip(request):
     except Vehicle.DoesNotExist:
         return JsonResponse(
             {"message": "Vehicle does not exist for this user"},
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     if user.has_active_trip():
@@ -55,7 +54,7 @@ def get_current_trip(request):
     if not user.has_active_trip():
         return JsonResponse(
             {"message": "User does not have an active trip"},
-            status=status.HTTP_404_NOT_FOUND
+            status=status.HTTP_404_NOT_FOUND,
         )
 
     serializer = TripSerializer(user.get_active_trip())
@@ -70,7 +69,7 @@ def get_available_trips(request):
     if user.has_active_trip():
         return JsonResponse(
             {"message": "User already has an active trip"},
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     trips = Trip.get_available_trips()
@@ -108,14 +107,13 @@ def send_offer(request, trip_id):
         trip = Trip.objects.get(id=trip_id)
     except Trip.DoesNotExist:
         return JsonResponse(
-            {"message": "Trip does not exist"},
-            status=status.HTTP_400_BAD_REQUEST
+            {"message": "Trip does not exist"}, status=status.HTTP_400_BAD_REQUEST
         )
 
     if user.has_active_trip():
         return JsonResponse(
             {"message": "User already has an active trip"},
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     data = request.data | {"trip": trip.id}
@@ -140,27 +138,26 @@ def accept_offer(request, trip_id, offer_id):
     if not user.has_active_trip():
         return JsonResponse(
             {"message": "User does not have an active trip"},
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     if not user.currently_driver or user.current_trip_driver is None:
         return JsonResponse(
             {"message": "User is not a driver right now"},
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     if user.current_trip_driver.id != trip_id:
         return JsonResponse(
             {"message": "User is not the driver of this trip"},
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     try:
         offer = user.current_trip_driver.offer_set.get(id=offer_id)
     except Offer.DoesNotExist:
         return JsonResponse(
-            {"message": "Offer does not exist"},
-            status=status.HTTP_400_BAD_REQUEST
+            {"message": "Offer does not exist"}, status=status.HTTP_400_BAD_REQUEST
         )
 
     try:
@@ -181,27 +178,26 @@ def reject_offer(request, trip_id, offer_id):
     if not user.has_active_trip():
         return JsonResponse(
             {"message": "User does not have an active trip"},
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     if not user.currently_driver or user.current_trip_driver is None:
         return JsonResponse(
             {"message": "User is not a driver right now"},
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     if user.current_trip_driver.id != trip_id:
         return JsonResponse(
             {"message": "User is not the driver of this trip"},
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     try:
         offer = user.current_trip_driver.offer_set.get(id=offer_id)
     except Offer.DoesNotExist:
         return JsonResponse(
-            {"message": "Offer does not exist"},
-            status=status.HTTP_400_BAD_REQUEST
+            {"message": "Offer does not exist"}, status=status.HTTP_400_BAD_REQUEST
         )
 
     try:
@@ -216,9 +212,35 @@ def reject_offer(request, trip_id, offer_id):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def finish_trip_as_passenger(request):
-    return JsonResponse(
-        {"message": "Finish trip as passenger"}, status=status.HTTP_200_OK
-    )
+    user: User = request.user
+
+    if not user.has_active_trip():
+        return JsonResponse(
+            {"message": "User does not have an active trip"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if not user.currently_passenger or user.current_offer_passenger is None:
+        return JsonResponse(
+            {"message": "User is not a passenger right now"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    stars = request.data.get("stars")
+
+    if not stars:
+        return JsonResponse(
+            {"message": "Stars are required"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    offer = user.current_offer_passenger
+
+    try:
+        offer.finish(stars)
+    except ValueError as e:
+        return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    return JsonResponse({"message": "Trip finished"}, status=status.HTTP_200_OK)
 
 
 # Eliminar un usuario de un viaje y calificar al usuario. Si ya no hay pasajeros, terminar el viaje

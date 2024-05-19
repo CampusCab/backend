@@ -11,14 +11,19 @@ class TripSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Trip
-        fields = ['id', 'vehicle', 'origin', 'destination', 'start_time', 'description']
+        fields = ["id", "vehicle", "origin", "destination", "start_time", "description"]
 
     # Validate that the origin and destination are not the same
     def validate(self, data):
-        if data['origin'] == data['destination']:
-            raise serializers.ValidationError("El origen y el destino no pueden ser iguales")
+        if data["origin"] == data["destination"]:
+            raise serializers.ValidationError(
+                "El origen y el destino no pueden ser iguales"
+            )
 
-        if data['origin'] not in ALLOWED_PLACES and data['destination'] not in ALLOWED_PLACES:
+        if (
+            data["origin"] not in ALLOWED_PLACES
+            and data["destination"] not in ALLOWED_PLACES
+        ):
             raise serializers.ValidationError("El origen y el destino no son válidos")
 
         return data

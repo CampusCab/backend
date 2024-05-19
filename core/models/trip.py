@@ -20,7 +20,7 @@ class Trip(models.Model):
 
         trips = cls.objects.filter(start_time__gte=now, finished=False)
         trips = trips.annotate(offer_count=models.Count("offer"))
-        trips = trips.filter(offer_count__lt=F('vehicle__max_passengers'))
+        trips = trips.filter(offer_count__lt=F("vehicle__max_passengers"))
 
         return trips
 
@@ -49,8 +49,14 @@ class Trip(models.Model):
             raise ValueError("El viaje ya ha sido finalizado.")
 
         for offer in self.offer_set.all():
+
             if not offer.finished:
-                raise ValueError("Aún hay ofertas sin finalizar.")
+                raise ValueError(f"Aún hay ofertas sin finalizar ({offer.id})")
+
+            if offer.stars_to_user is None:
+                raise ValueError(
+                    f"Aún no se ha calificado a un usuario (Oferta: {offer.id})"
+                )
 
         self.finished = True
         self.save()
