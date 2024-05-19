@@ -3,7 +3,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import User
-from ..models import Trip
+from ..models import Trip, Vehicle
+from ..serializers.trip_serializer import TripSerializer
 
 
 # Ofrecer el viaje
@@ -12,13 +13,38 @@ from ..models import Trip
 def create_trip(request):
     user: User = request.user
 
-    trip = Trip.objects.create()
+    if not request.data.get("vehicle"):
+        return JsonResponse(
+            {"message": "Vehicle is required"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
-    user.start_as_driver()
+    try:
+        vehicle = Vehicle.objects.get(id=request.data.get("vehicle"), owner=user)
+    except Vehicle.DoesNotExist:
+        return JsonResponse(
+            {"message": "Vehicle does not exist for this user"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
-    # Validar que el usuario no tenga un viaje activo
+    if user.has_active_trip():
+        active_trip = user.get_active_trip()
 
-    return JsonResponse({"message": "Create trip"}, status=status.HTTP_200_OK)
+        return JsonResponse(
+            {"message": f"User already has an active trip (ID: {active_trip.id})"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    serializer = TripSerializer(data=request.data)
+
+    if not serializer.is_valid():
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    trip = serializer.save()
+    user.start_as_driver(trip)
+
+    serializer.save(user=user, vehicle=vehicle)
+    return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
 
 
 # Conseguir el viaje actual del usuario

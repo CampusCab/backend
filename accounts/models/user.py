@@ -80,6 +80,15 @@ class User(AbstractUser):
 
         return True
 
+    def has_active_trip(self):
+        return self.currently_driver or self.currently_passenger
+
+    def get_active_trip(self):
+        if self.currently_driver:
+            return self.current_trip_driver
+        elif self.currently_passenger:
+            return self.current_offer_passenger.trip
+
     def start_as_driver(self, trip):
         self.currently_passenger = False
         self.current_offer_passenger = None
