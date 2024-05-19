@@ -9,7 +9,7 @@ class UserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
         if not email: raise ValueError(gtl("Ingresa un correo válido"))
 
-        user = self.model(email = email, **extra_fields)
+        user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save()
 
@@ -20,33 +20,47 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
 
-        if extra_fields.get("is_staff") is not True: raise ValueError(gtl("El superusuario debe tener is_staff = True."))
-        if extra_fields.get("is_superuser") is not True: raise ValueError(gtl("El superusuario debe tener is_superuser = True."))
+        if extra_fields.get("is_staff") is not True: raise ValueError(
+            gtl("El superusuario debe tener is_staff = True."))
+        if extra_fields.get("is_superuser") is not True: raise ValueError(
+            gtl("El superusuario debe tener is_superuser = True."))
 
         return self.create_user(email, password, **extra_fields)
 
 
 class User(AbstractUser):
-    id = models.BigAutoField(auto_created = True,primary_key = True,serialize = False,editable = False)
-    email = models.EmailField(blank = False,unique = True,max_length = 255)
-    phone = models.CharField(blank = False,unique = True,max_length = 20)
-    first_name = models.CharField(blank = False,max_length = 50)
-    last_name = models.CharField(blank = False,max_length = 50)
-    gender = models.CharField(blank = False,max_length = 1, default="M")
-    is_active = models.BooleanField(default = False)
-    verification_code = models.CharField(blank = True,null = True,max_length = 6)
+    id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, editable=False)
+    email = models.EmailField(blank=False, unique=True, max_length=255)
+    phone = models.CharField(blank=False, unique=True, max_length=20)
+    first_name = models.CharField(blank=False, max_length=50)
+    last_name = models.CharField(blank=False, max_length=50)
+    gender = models.CharField(blank=True, max_length=1)
+    is_active = models.BooleanField(default=False)
+    verification_code = models.CharField(blank=True, null=True, max_length=6)
 
-    total_stars_driver = models.IntegerField(default = 0)
-    total_trips_driver = models.IntegerField(default = 0)
-    rating_driver = models.FloatField(default = 0)
-    currently_driver = models.BooleanField(default = False)
-    current_trip_driver = models.ForeignKey("core.Trip",on_delete = models.SET_NULL, blank = True, null = True, related_name = "driver")
+    total_stars_driver = models.IntegerField(default=0)
+    total_trips_driver = models.IntegerField(default=0)
+    rating_driver = models.FloatField(default=0)
+    currently_driver = models.BooleanField(default=False)
+    current_trip_driver = models.ForeignKey(
+        "core.Trip",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="driver"
+    )
 
-    total_stars_passenger = models.IntegerField(default = 0)
-    total_trips_passenger = models.IntegerField(default = 0)
-    rating_passenger = models.FloatField(default = 0)
-    currently_passenger = models.BooleanField(default = False)
-    current_offer_passenger = models.ForeignKey("core.Offer",on_delete = models.SET_NULL, blank = True, null = True, related_name = "passenger")
+    total_stars_passenger = models.IntegerField(default=0)
+    total_trips_passenger = models.IntegerField(default=0)
+    rating_passenger = models.FloatField(default=0)
+    currently_passenger = models.BooleanField(default=False)
+    current_offer_passenger = models.ForeignKey(
+        "core.Offer",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="passenger"
+    )
 
     # Remove username field and set email as the USERNAME_FIELD
     username = None
@@ -94,7 +108,8 @@ class User(AbstractUser):
         self.save()
 
     def finish_trip(self):
-        if not self.currently_driver and not self.current_trip_driver: raise ValueError("Este usuario no es un conductor ni pasajero ahora mismo.")
+        if not self.currently_driver and not self.current_trip_driver:
+            raise ValueError("Este usuario no es un conductor ni pasajero ahora mismo.")
 
         if self.currently_driver:
             self.currently_driver = False
