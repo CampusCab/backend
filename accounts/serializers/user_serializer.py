@@ -11,7 +11,7 @@ class UserSerializer(ModelSerializer):
     phone = serializers.CharField(error_messages={"invalid": "Ingresa un número de teléfono válido"})
     first_name = serializers.CharField(error_messages={"required": "Ingresa tu nombre"})
     last_name = serializers.CharField(error_messages={"required": "Ingresa tu apellido"})
-    gender = serializers.CharField(error_messages={"required": "Ingresa tu género"})
+    gender = serializers.CharField(required=False)
 
     # Write only fields
     password = serializers.CharField(write_only=True)
