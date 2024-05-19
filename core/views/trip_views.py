@@ -237,7 +237,7 @@ def finish_trip_as_passenger(request):
     offer = user.current_offer_passenger
 
     try:
-        offer.finish(stars)
+        offer.finish_by_passenger(stars)
     except ValueError as e:
         return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -299,3 +299,8 @@ def remove_user_from_trip(request):
             {"message": "User to remove is not a passenger of this trip"},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+    try:
+        offer.finish_by_driver(stars)
+    except ValueError as e:
+        return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)

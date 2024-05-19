@@ -7,4 +7,13 @@ class OfferSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Offer
-        fields = ["id", "trip", "amount", "accepted", "finished", "stars_to_user"]
+        fields = [
+            "id",
+            "trip",
+            "amount",
+            "accepted",
+            "finished",
+            "finished_by",
+            "stars_to_user",
+            "stars_to_driver",
+        ]
