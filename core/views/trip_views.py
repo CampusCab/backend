@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import User
 from ..models import Vehicle, Trip
+from ..serializers.offer_serializer import OfferSerializer
 from ..serializers.trip_serializer import TripSerializer
 
 
@@ -14,7 +15,7 @@ def create_trip(request):
 
     if not request.data.get("vehicle"):
         return JsonResponse(
-            {"message": "Vehicle is required"},
+            {"message": "Vehicle ID is required"},
             status=status.HTTP_400_BAD_REQUEST
         )
 
@@ -79,11 +80,41 @@ def get_available_trips(request):
     return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
 
 
-# Enviar oferta para un viaje
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def send_offer(request):
-    return JsonResponse({"message": "Send offer"}, status=status.HTTP_200_OK)
+    user: User = request.user
+
+    if not request.data.get("trip"):
+        return JsonResponse(
+            {"message": "Trip ID is required"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        trip = Trip.objects.get(id=request.data.get("trip"))
+    except Trip.DoesNotExist:
+        return JsonResponse(
+            {"message": "Trip does not exist"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if user.has_active_trip():
+        return JsonResponse(
+            {"message": "User already has an active trip"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    serializer = OfferSerializer(data=request.data)
+
+    if not serializer.is_valid():
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    offer = serializer.save()
+    user.start_as_passenger(offer)
+
+    serializer.save(user=user, trip=trip)
+    return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
 
 
 # Aceptar oferta como conductor
