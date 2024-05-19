@@ -6,11 +6,12 @@ ALLOWED_PLACES = ["Campus El Volador", "Campus Del Río", "Campus Robledo"]
 
 
 class TripSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
     description = serializers.CharField(required=False)
 
     class Meta:
         model = Trip
-        fields = ['vehicle', 'origin', 'destination', 'start_time', 'description']
+        fields = ['id', 'vehicle', 'origin', 'destination', 'start_time', 'description']
 
     # Validate that the origin and destination are not the same
     def validate(self, data):

@@ -82,17 +82,11 @@ def get_available_trips(request):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def send_offer(request):
+def send_offer(request, trip_id):
     user: User = request.user
 
-    if not request.data.get("trip"):
-        return JsonResponse(
-            {"message": "Trip ID is required"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
     try:
-        trip = Trip.objects.get(id=request.data.get("trip"))
+        trip = Trip.objects.get(id=trip_id)
     except Trip.DoesNotExist:
         return JsonResponse(
             {"message": "Trip does not exist"},
@@ -105,7 +99,8 @@ def send_offer(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    serializer = OfferSerializer(data=request.data)
+    data = request.data | {"trip": trip.id}
+    serializer = OfferSerializer(data=data)
 
     if not serializer.is_valid():
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
