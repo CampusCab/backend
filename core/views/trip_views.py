@@ -50,7 +50,16 @@ def create_trip(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_current_trip(request):
-    return JsonResponse({"message": "Get current trip"}, status=status.HTTP_200_OK)
+    user: User = request.user
+
+    if not user.has_active_trip():
+        return JsonResponse(
+            {"message": "User does not have an active trip"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    serializer = TripSerializer(user.get_active_trip())
+    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
 
 # Conseguir todos los viajes disponibles para el usuario
