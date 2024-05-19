@@ -1,7 +1,7 @@
-import resend
 from random import choices
 from string import ascii_uppercase, digits
 from django.conf import settings
+import resend
 
 
 def send_email(user, code):
@@ -22,7 +22,7 @@ def send_email(user, code):
     try:
         resend.Emails.send(params)
         return True
-    except Exception as e:
+    except Exception:
         return False
 
 

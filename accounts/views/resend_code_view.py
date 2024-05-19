@@ -5,8 +5,6 @@ from rest_framework.decorators import api_view
 from ..models.user import User
 from ..utils.email_utils import generate_code, send_email
 
-from ..models.user import User
-
 
 @api_view(["POST"])
 def resend_code(request):

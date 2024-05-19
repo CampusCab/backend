@@ -2,8 +2,8 @@ from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from ..models import Trip
 from accounts.models import User
+from ..models import Trip
 
 
 # Ofrecer el viaje

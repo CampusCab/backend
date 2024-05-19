@@ -1,8 +1,8 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
-from ..models.vehicle import Vehicle
 from accounts.models.user import User
+from ..models.vehicle import Vehicle
 
 
 class VehicleSerializer(ModelSerializer):

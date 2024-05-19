@@ -1,5 +1,5 @@
-from rest_framework.serializers import Serializer
 from django.contrib.auth import authenticate
+from rest_framework.serializers import Serializer
 from rest_framework import serializers
 
 from ..models.user import User
