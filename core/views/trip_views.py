@@ -7,7 +7,6 @@ from ..models import Trip, Vehicle
 from ..serializers.trip_serializer import TripSerializer
 
 
-# Ofrecer el viaje
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def create_trip(request):
