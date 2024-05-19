@@ -1,3 +1,4 @@
+from django.db.models import F
 from django.utils import timezone
 from django.db import models
 from .vehicle import Vehicle
@@ -12,6 +13,16 @@ class Trip(models.Model):
     start_time = models.DateTimeField()
     description = models.TextField()
     finished = models.BooleanField(default=False)
+
+    @classmethod
+    def get_available_trips(cls):
+        now = timezone.now()
+
+        trips = cls.objects.filter(start_time__gte=now, finished=False)
+        trips = trips.annotate(offer_count=models.Count("offer"))
+        trips = trips.filter(offer_count__lt=F('vehicle__max_passengers'))
+
+        return trips
 
     def verify_trip_for_campus(self):
         if self.origin not in ALLOWED_PLACES and self.destination not in ALLOWED_PLACES:

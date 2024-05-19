@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import User
-from ..models import Vehicle
+from ..models import Vehicle, Trip
 from ..serializers.trip_serializer import TripSerializer
 
 
@@ -46,7 +46,6 @@ def create_trip(request):
     return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
 
 
-# Conseguir el viaje actual del usuario
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_current_trip(request):
@@ -66,7 +65,18 @@ def get_current_trip(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_available_trips(request):
-    return JsonResponse({"message": "Get available trips"}, status=status.HTTP_200_OK)
+    user: User = request.user
+
+    if user.has_active_trip():
+        return JsonResponse(
+            {"message": "User already has an active trip"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    trips = Trip.get_available_trips()
+    serializer = TripSerializer(trips, many=True)
+
+    return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
 
 
 # Enviar oferta para un viaje
