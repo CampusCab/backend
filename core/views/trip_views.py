@@ -116,7 +116,7 @@ def send_offer(request, trip_id):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    data = request.data | {"trip": trip.id}
+    data = request.data | {"trip": trip.id, "passenger_id": user.id}
     serializer = OfferSerializer(data=data)
 
     if not serializer.is_valid():
@@ -208,7 +208,6 @@ def reject_offer(request, trip_id, offer_id):
     return JsonResponse({"message": "Offer rejected"}, status=status.HTTP_200_OK)
 
 
-# Terminar viaje siendo pasajero y calificar al conductor
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def finish_trip_as_passenger(request):
@@ -244,7 +243,6 @@ def finish_trip_as_passenger(request):
     return JsonResponse({"message": "Trip finished"}, status=status.HTTP_200_OK)
 
 
-# Eliminar un usuario de un viaje y calificar al usuario. Si ya no hay pasajeros, terminar el viaje
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def remove_user_from_trip(request):
@@ -304,3 +302,13 @@ def remove_user_from_trip(request):
         offer.finish_by_driver(stars)
     except ValueError as e:
         return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    trip = user.current_trip_driver
+
+    try:
+        trip.finish()
+        return JsonResponse({"message": "Trip finished"}, status=status.HTTP_200_OK)
+    except ValueError as _:
+        return JsonResponse(
+            {"message": "User removed from trip"}, status=status.HTTP_200_OK
+        )

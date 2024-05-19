@@ -10,6 +10,7 @@ class OfferSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "trip",
+            "passenger_id",
             "amount",
             "accepted",
             "finished",

@@ -6,6 +6,7 @@ from .trip import Trip
 
 class Offer(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
+    passenger_id = models.IntegerField(null=False, blank=False)
     amount = models.IntegerField()
     accepted = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
