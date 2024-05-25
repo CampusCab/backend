@@ -129,7 +129,6 @@ def send_offer(request, trip_id):
     return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
 
 
-# Aceptar oferta como conductor
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def accept_offer(request, trip_id, offer_id):
@@ -169,7 +168,6 @@ def accept_offer(request, trip_id, offer_id):
     return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
 
-# Rechazar oferta como conductor
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def reject_offer(request, trip_id, offer_id):
