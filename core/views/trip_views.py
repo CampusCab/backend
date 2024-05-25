@@ -210,7 +210,7 @@ def reject_offer(request, trip_id, offer_id):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def finish_trip_as_passenger(request):
+def finish_trip_as_passenger(request, trip_id):
     user: User = request.user
 
     if not user.has_active_trip():
@@ -222,6 +222,12 @@ def finish_trip_as_passenger(request):
     if not user.currently_passenger or user.current_offer_passenger is None:
         return JsonResponse(
             {"message": "User is not a passenger right now"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if user.current_offer_passenger.trip.id != trip_id:
+        return JsonResponse(
+            {"message": "User is not a passenger of this trip"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -245,7 +251,7 @@ def finish_trip_as_passenger(request):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def remove_user_from_trip(request):
+def remove_user_from_trip(request, trip_id, user_id):
     user: User = request.user
 
     if not user.has_active_trip():
@@ -268,16 +274,8 @@ def remove_user_from_trip(request):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    user_to_remove = request.data.get("user_to_remove")
-
-    if not user_to_remove:
-        return JsonResponse(
-            {"message": "User to remove is required"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
     try:
-        user_to_remove = User.objects.get(id=user_to_remove)
+        user_to_remove = User.objects.get(id=user_id)
     except User.DoesNotExist:
         return JsonResponse(
             {"message": "User to remove does not exist"},
@@ -287,6 +285,12 @@ def remove_user_from_trip(request):
     if user_to_remove.current_offer_passenger is None:
         return JsonResponse(
             {"message": "User to remove is not a passenger right now"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if user_to_remove.current_offer_passenger.trip.id != trip_id:
+        return JsonResponse(
+            {"message": "User to remove is not a passenger of this trip"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 

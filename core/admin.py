@@ -23,7 +23,7 @@ class TripAdmin(admin.ModelAdmin):
 
 
 class OfferAdmin(admin.ModelAdmin):
-    list_display = ("id", "trip", "amount", "accepted", "finished", "stars_to_user")
+    list_display = ("id", "trip", "amount", "accepted", "finished", "stars_to_user", "stars_to_driver")
     search_fields = ("trip__origin", "trip__destination")
     ordering = ("trip",)
 
