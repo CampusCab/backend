@@ -87,7 +87,7 @@ class Offer(models.Model):
         self.stars_to_user = stars_to_user
         self.save()
 
-    def rate_passenger(self, stars_to_user):
+    def rate_passenger(self, stars_to_user, passenger_id = None):
         if not self.finished:
             raise ValueError("La oferta no ha sido finalizada.")
         if self.finished_by == "D":
@@ -97,7 +97,10 @@ class Offer(models.Model):
 
         self.stars_to_user = stars_to_user
 
-        passenger = User.objects.get(current_offer_passenger_id=self.id)
+        if passenger_id:
+            passenger = User.objects.get(id=passenger_id)
+        else:
+            passenger = User.objects.get(current_offer_passenger_id=self.id)
 
         passenger.total_stars_passenger += stars_to_user
         passenger.total_trips_passenger += 1

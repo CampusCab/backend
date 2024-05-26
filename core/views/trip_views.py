@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import User
 from ..models import Vehicle, Trip, Offer
-from ..serializers.offer_serializer import OfferSerializer, PastOffersDriverSerializer
+from ..serializers.offer_serializer import OfferSerializer
 from ..serializers.trip_serializer import (
     TripSerializer,
     PastTripPassengerSerializer,
@@ -348,7 +348,37 @@ def remove_user_from_trip(request, trip_id, user_id):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def rate_passenger_as_driver(request, trip_id, user_id):
-    pass
+    user: User = request.user
+
+    stars = request.data.get("stars")
+
+    try:
+        trip = Trip.objects.get(id=trip_id)
+    except Trip.DoesNotExist:
+        return JsonResponse(
+            {"message": "Trip does not exist"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if trip.vehicle.owner.id != user.id:
+        return JsonResponse(
+            {"message": "User is not the driver of this trip"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        offer = Offer.objects.get(trip_id=trip_id, passenger_id=user_id)
+    except Offer.DoesNotExist:
+        return JsonResponse(
+            {"message": "Passenger is not a passenger of this trip"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        offer.rate_passenger(stars, user_id)
+    except ValueError as e:
+        return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    return JsonResponse({"message": "Passenger rated"}, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])

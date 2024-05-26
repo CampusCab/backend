@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from .offer_serializer import (
-    OfferSerializer,
     PastOfferPassengerSerializer,
     PastOffersDriverSerializer,
 )
