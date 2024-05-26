@@ -4,8 +4,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import User
 from ..models import Vehicle, Trip, Offer
-from ..serializers.offer_serializer import OfferSerializer
-from ..serializers.trip_serializer import TripSerializer
+from ..serializers.offer_serializer import OfferSerializer, PastOffersDriverSerializer
+from ..serializers.trip_serializer import TripSerializer, PastTripPassengerSerializer, PastTripDriverSerializer
 
 
 @api_view(["POST"])
@@ -80,21 +80,30 @@ def get_available_trips(request):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def get_driver_trips(request):
+def get_past_trips(request):
     user: User = request.user
 
-    trips = Trip.objects.filter(vehicle__owner__id=user.id, finished=True)
-    total_collected = 0
+    trips_as_driver = Trip.objects.filter(finished=True, vehicle__owner__id=user.id)
+    trips_as_passenger = Trip.objects.filter(finished=True, offer__passenger_id=user.id)
 
-    for trip in trips:
-        offers = trip.offer_set.all()
-        for offer in offers:
-            if offer.accepted:
-                total_collected += offer.ammount
+    # append offer to each trip
+    for trip in trips_as_passenger:
+        offer = trip.offer_set.get(passenger_id=user.id)
+        trip.offer = offer
 
-    serializer = TripSerializer(trips, many=True)
+    total_collected = sum(offer.amount for trip in trips_as_driver for offer in trip.offer_set.all() if offer.accepted)
+    total_spent = sum(offer.amount for trip in trips_as_passenger for offer in trip.offer_set.all() if offer.accepted)
 
-    data = {"total_collected": total_collected, "trips": serializer.data}
+    serializer_driver = PastTripDriverSerializer(trips_as_driver, many=True)
+    serializer_passenger = PastTripPassengerSerializer(trips_as_passenger, many=True)
+
+    data = {
+        "trips_as_driver": serializer_driver.data,
+        "trips_as_passenger": serializer_passenger.data,
+        "total_collected": total_collected,
+        "total_spent": total_spent
+    }
+
     return JsonResponse(data, status=status.HTTP_200_OK)
 
 
@@ -113,6 +122,12 @@ def send_offer(request, trip_id):
     if user.has_active_trip():
         return JsonResponse(
             {"message": "User already has an active trip"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if trip.offer_set.filter(passenger_id=user.id).exists():
+        return JsonResponse(
+            {"message": "User already has an offer for this trip"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -314,3 +329,15 @@ def remove_user_from_trip(request, trip_id, user_id):
         return JsonResponse(
             {"message": "User removed from trip"}, status=status.HTTP_200_OK
         )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def rate_passenger_as_driver(request):
+    pass
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def rate_driver_as_passenger(request):
+    pass

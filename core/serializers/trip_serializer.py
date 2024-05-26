@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from .offer_serializer import OfferSerializer, PastOfferPassengerSerializer, PastOffersDriverSerializer
 from ..models import Trip
 
 ALLOWED_PLACES = ["Campus El Volador", "Campus Del Río", "Campus Robledo"]
@@ -27,3 +28,23 @@ class TripSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("El origen y el destino no son válidos")
 
         return data
+
+
+class PastTripPassengerSerializer(serializers.ModelSerializer):
+    offer = PastOfferPassengerSerializer(read_only=True)
+
+    class Meta:
+        model = Trip
+        fields = ["id", "vehicle", "origin", "destination", "start_time", "description", "offer"]
+
+
+class PastTripDriverSerializer(serializers.ModelSerializer):
+    offers = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Trip
+        fields = ["id", "vehicle", "origin", "destination", "start_time", "description", "offers"]
+
+    def get_offers(self, obj):
+        offers = obj.offer_set.all()
+        return PastOffersDriverSerializer(offers, many=True).data

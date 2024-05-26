@@ -127,3 +127,8 @@ class Offer(models.Model):
 
         driver.save()
         self.save()
+
+    def __str__(self):
+        # Get passenger name
+        passenger_name = User.objects.get(id=self.passenger_id).get_full_name()
+        return f"ID: {self.id} - For trip {self.trip.id} by {passenger_name}"

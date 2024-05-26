@@ -16,7 +16,7 @@ vehicle_patterns = [
 general_trip_patterns = [
     path("trips/avaliable", trip_views.get_available_trips, name="get_available_trips"),
     path("trips/current", trip_views.get_current_trip, name="get_current_trip"),
-    path("trips/past", trip_views.get_driver_trips, name="get_driver_trips"),
+    path("trips/past", trip_views.get_past_trips, name="get_past_trips"),
     path("trips/create", trip_views.create_trip, name="create_trip"),
 ]
 

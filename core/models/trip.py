@@ -62,4 +62,8 @@ class Trip(models.Model):
         self.save()
 
     def __str__(self):
-        return f"{self.id} - from {self.origin} at {self.start_time}"
+        time = timezone.localtime(self.start_time).strftime("%H:%M")
+        date = timezone.localtime(self.start_time).strftime("%Y-%m-%d")
+
+
+        return f"ID: {self.id} - {date}, {time} - {self.origin} to {self.destination}"
