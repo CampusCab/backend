@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import User
 from ..models import Vehicle, Trip, Offer
-from ..serializers.offer_serializer import OfferSerializer
+from ..serializers.offer_serializer import OfferSerializer, CurrentOfferSerializer
 from ..serializers.trip_serializer import (
     TripSerializer,
     PastTripPassengerSerializer,
@@ -61,10 +61,16 @@ def get_current_trip(request):
             status=status.HTTP_404_NOT_FOUND,
         )
 
-    offer = user.current_offer_passenger
     serializer = TripSerializer(user.get_active_trip())
+    data = serializer.data
 
-    data = serializer.data | {"accepted": offer.accepted}
+    if user.currently_passenger:
+        offer = user.current_offer_passenger
+        data = data | {"accepted": offer.accepted}
+    elif user.currently_driver:
+        offers = user.current_trip_driver.offer_set.all()
+        data = data | {"offers": CurrentOfferSerializer(offers, many=True).data}
+
     return JsonResponse(data, status=status.HTTP_200_OK)
 
 

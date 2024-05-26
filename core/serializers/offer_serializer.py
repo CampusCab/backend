@@ -40,3 +40,9 @@ class PastOffersDriverSerializer(serializers.ModelSerializer):
 
     def get_pending_to_rate_user(self, obj):
         return obj.stars_to_user is None
+
+
+class CurrentOfferSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Offer
+        fields = ["id", "amount", "accepted", "finished"]
