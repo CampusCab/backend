@@ -384,4 +384,28 @@ def rate_passenger_as_driver(request, trip_id, user_id):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def rate_driver_as_passenger(request, trip_id):
-    pass
+    user: User = request.user
+
+    stars = request.data.get("stars")
+
+    try:
+        trip = Trip.objects.get(id=trip_id)
+    except Trip.DoesNotExist:
+        return JsonResponse(
+            {"message": "Trip does not exist"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        offer = Offer.objects.get(trip_id=trip_id, passenger_id=user.id)
+    except Offer.DoesNotExist:
+        return JsonResponse(
+            {"message": "User is not a passenger of this trip"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        offer.rate_driver(stars)
+    except ValueError as e:
+        return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    return JsonResponse({"message": "Driver rated"}, status=status.HTTP_200_OK)
