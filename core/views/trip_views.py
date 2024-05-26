@@ -61,8 +61,11 @@ def get_current_trip(request):
             status=status.HTTP_404_NOT_FOUND,
         )
 
+    offer = user.current_offer_passenger
     serializer = TripSerializer(user.get_active_trip())
-    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+
+    data = serializer.data | {"accepted": offer.accepted}
+    return JsonResponse(data, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
