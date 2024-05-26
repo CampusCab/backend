@@ -39,19 +39,10 @@ class TripAdmin(admin.ModelAdmin):
     inlines = [OfferInline]
 
 
-class OfferAdminForm(forms.ModelForm):
-    passenger = forms.ModelChoiceField(queryset=User.objects.all())
-
-    class Meta:
-        model = Offer
-        fields = "__all__"
-
-
 class OfferAdmin(admin.ModelAdmin):
-    form = OfferAdminForm
     list_display = (
         "id",
-        "display_passenger",
+        "passenger_id",
         "trip",
         "amount",
         "accepted",
@@ -61,11 +52,6 @@ class OfferAdmin(admin.ModelAdmin):
     )
     search_fields = ("trip__origin", "trip__destination")
     ordering = ("trip",)
-
-    def display_passenger(self, obj):
-        return str(User.objects.get(id=obj.passenger_id))
-
-    display_passenger.short_description = "Passenger"
 
 
 admin.site.register(Vehicle, VehicleAdmin)

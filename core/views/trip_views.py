@@ -276,13 +276,18 @@ def finish_trip_as_passenger(request, trip_id):
         )
 
     offer = user.current_offer_passenger
+    trip = user.current_offer_passenger.trip
 
     try:
         offer.finish_by_passenger(stars)
     except ValueError as e:
         return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    return JsonResponse({"message": "Trip finished"}, status=status.HTTP_200_OK)
+    try:
+        trip.finish()
+        return JsonResponse({"message": "Trip finished"}, status=status.HTTP_200_OK)
+    except ValueError as _:
+        return JsonResponse({"message": "Trip finished"}, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
@@ -405,7 +410,14 @@ def rate_driver_as_passenger(request, trip_id):
         )
 
     try:
-        offer = Offer.objects.get(trip_id=trip_id, passenger_id=user.id)
+        offers = list(trip.offer_set.all())
+
+        offer = None
+        for o in offers:
+            if o.passenger_id == user.id:
+                offer = o
+                break
+
     except Offer.DoesNotExist:
         return JsonResponse(
             {"message": "User is not a passenger of this trip"},

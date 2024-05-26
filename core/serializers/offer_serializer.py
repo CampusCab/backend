@@ -45,4 +45,4 @@ class PastOffersDriverSerializer(serializers.ModelSerializer):
 class CurrentOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offer
-        fields = ["id", "amount", "accepted", "finished"]
+        fields = ["id", "passenger_id", "amount", "accepted", "finished"]
