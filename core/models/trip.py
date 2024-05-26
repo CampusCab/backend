@@ -65,5 +65,4 @@ class Trip(models.Model):
         time = timezone.localtime(self.start_time).strftime("%H:%M")
         date = timezone.localtime(self.start_time).strftime("%Y-%m-%d")
 
-
         return f"ID: {self.id} - {date}, {time} - {self.origin} to {self.destination}"

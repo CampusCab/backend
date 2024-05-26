@@ -14,7 +14,14 @@ class VehicleAdmin(admin.ModelAdmin):
 class OfferInline(admin.StackedInline):
     model = Offer
     extra = 0
-    fields = ("passenger_id", "amount", "accepted", "finished", "stars_to_user", "stars_to_driver")
+    fields = (
+        "passenger_id",
+        "amount",
+        "accepted",
+        "finished",
+        "stars_to_user",
+        "stars_to_driver",
+    )
 
 
 class TripAdmin(admin.ModelAdmin):
@@ -37,18 +44,28 @@ class OfferAdminForm(forms.ModelForm):
 
     class Meta:
         model = Offer
-        fields = '__all__'
+        fields = "__all__"
 
 
 class OfferAdmin(admin.ModelAdmin):
     form = OfferAdminForm
-    list_display = ("id", "display_passenger", "trip", "amount", "accepted", "finished", "stars_to_user", "stars_to_driver")
+    list_display = (
+        "id",
+        "display_passenger",
+        "trip",
+        "amount",
+        "accepted",
+        "finished",
+        "stars_to_user",
+        "stars_to_driver",
+    )
     search_fields = ("trip__origin", "trip__destination")
     ordering = ("trip",)
 
     def display_passenger(self, obj):
         return str(User.objects.get(id=obj.passenger_id))
-    display_passenger.short_description = 'Passenger'
+
+    display_passenger.short_description = "Passenger"
 
 
 admin.site.register(Vehicle, VehicleAdmin)

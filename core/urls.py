@@ -44,5 +44,18 @@ current_trip_patterns = [
     ),
 ]
 
-trip_patterns = general_trip_patterns + current_trip_patterns
+rate_patterns = [
+    path(
+        "trips/<int:trip_id>/rate",
+        trip_views.rate_driver_as_passenger,
+        name="rate_driver_as_passenger",
+    ),
+    path(
+        "trips/<int:trip_id>/rate/<int:user_id>",
+        trip_views.rate_passenger_as_driver,
+        name="rate_passenger_as_driver",
+    ),
+]
+
+trip_patterns = general_trip_patterns + current_trip_patterns + rate_patterns
 urlpatterns = trip_patterns + vehicle_patterns

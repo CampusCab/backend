@@ -5,7 +5,11 @@ from rest_framework.permissions import IsAuthenticated
 from accounts.models import User
 from ..models import Vehicle, Trip, Offer
 from ..serializers.offer_serializer import OfferSerializer, PastOffersDriverSerializer
-from ..serializers.trip_serializer import TripSerializer, PastTripPassengerSerializer, PastTripDriverSerializer
+from ..serializers.trip_serializer import (
+    TripSerializer,
+    PastTripPassengerSerializer,
+    PastTripDriverSerializer,
+)
 
 
 @api_view(["POST"])
@@ -91,8 +95,18 @@ def get_past_trips(request):
         offer = trip.offer_set.get(passenger_id=user.id)
         trip.offer = offer
 
-    total_collected = sum(offer.amount for trip in trips_as_driver for offer in trip.offer_set.all() if offer.accepted)
-    total_spent = sum(offer.amount for trip in trips_as_passenger for offer in trip.offer_set.all() if offer.accepted)
+    total_collected = sum(
+        offer.amount
+        for trip in trips_as_driver
+        for offer in trip.offer_set.all()
+        if offer.accepted
+    )
+    total_spent = sum(
+        offer.amount
+        for trip in trips_as_passenger
+        for offer in trip.offer_set.all()
+        if offer.accepted
+    )
 
     serializer_driver = PastTripDriverSerializer(trips_as_driver, many=True)
     serializer_passenger = PastTripPassengerSerializer(trips_as_passenger, many=True)
@@ -101,7 +115,7 @@ def get_past_trips(request):
         "trips_as_driver": serializer_driver.data,
         "trips_as_passenger": serializer_passenger.data,
         "total_collected": total_collected,
-        "total_spent": total_spent
+        "total_spent": total_spent,
     }
 
     return JsonResponse(data, status=status.HTTP_200_OK)
@@ -333,11 +347,11 @@ def remove_user_from_trip(request, trip_id, user_id):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def rate_passenger_as_driver(request):
+def rate_passenger_as_driver(request, trip_id, user_id):
     pass
 
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def rate_driver_as_passenger(request):
+def rate_driver_as_passenger(request, trip_id):
     pass

@@ -1,6 +1,10 @@
 from rest_framework import serializers
 
-from .offer_serializer import OfferSerializer, PastOfferPassengerSerializer, PastOffersDriverSerializer
+from .offer_serializer import (
+    OfferSerializer,
+    PastOfferPassengerSerializer,
+    PastOffersDriverSerializer,
+)
 from ..models import Trip
 
 ALLOWED_PLACES = ["Campus El Volador", "Campus Del Río", "Campus Robledo"]
@@ -35,7 +39,15 @@ class PastTripPassengerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Trip
-        fields = ["id", "vehicle", "origin", "destination", "start_time", "description", "offer"]
+        fields = [
+            "id",
+            "vehicle",
+            "origin",
+            "destination",
+            "start_time",
+            "description",
+            "offer",
+        ]
 
 
 class PastTripDriverSerializer(serializers.ModelSerializer):
@@ -43,7 +55,15 @@ class PastTripDriverSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Trip
-        fields = ["id", "vehicle", "origin", "destination", "start_time", "description", "offers"]
+        fields = [
+            "id",
+            "vehicle",
+            "origin",
+            "destination",
+            "start_time",
+            "description",
+            "offers",
+        ]
 
     def get_offers(self, obj):
         offers = obj.offer_set.all()
