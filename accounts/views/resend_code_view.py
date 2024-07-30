@@ -12,7 +12,7 @@ def resend_code(request):
 
     fields = {"email": email}
     errors = {
-        field: "This field is required"
+        field: "Este campo es requerido"
         for field, value in fields.items()
         if value is None
     }
@@ -24,12 +24,14 @@ def resend_code(request):
         user = User.objects.get(email=email)
     except User.DoesNotExist:
         return JsonResponse(
-            {"error": "User does not exists"}, status=status.HTTP_400_BAD_REQUEST
+            {"error": "El usuario no existe"},
+            status=status.HTTP_400_BAD_REQUEST
         )
 
     if user.is_active:
         return JsonResponse(
-            {"error": "Account is already verified"}, status=status.HTTP_400_BAD_REQUEST
+            {"error": "La cuenta ya ha sido activada"},
+            status=status.HTTP_400_BAD_REQUEST
         )
 
     code = generate_code()
@@ -37,7 +39,8 @@ def resend_code(request):
 
     if send_email(user, code):
         return JsonResponse(
-            {"message": "Code resent successfully"}, status=status.HTTP_200_OK
+            {"message": "Código de verificación reenviado"},
+            status=status.HTTP_200_OK
         )
 
     user.save()

@@ -13,7 +13,7 @@ def verify_account(request):
     fields = {"email": email, "verification_code": verification_code}
 
     errors = {
-        field: "This field is required"
+        field: "El campo es requerido"
         for field, value in fields.items()
         if value is None
     }
@@ -25,14 +25,17 @@ def verify_account(request):
         user = User.objects.get(email=email)
     except User.DoesNotExist:
         return JsonResponse(
-            {"error": "User does not exists"}, status=status.HTTP_400_BAD_REQUEST
+            {"error": "El usuario no existe"},
+            status=status.HTTP_400_BAD_REQUEST
         )
 
     if not user.verify(verification_code):
         return JsonResponse(
-            {"error": "Invalid verification code"}, status=status.HTTP_400_BAD_REQUEST
+            {"error": "El código de verificación es incorrecto"},
+            status=status.HTTP_400_BAD_REQUEST
         )
 
     return JsonResponse(
-        {"message": "Account verified successfully"}, status=status.HTTP_200_OK
+        {"message": "Cuenta verificada correctamente"},
+        status=status.HTTP_200_OK
     )

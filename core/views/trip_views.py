@@ -19,14 +19,14 @@ def create_trip(request):
 
     if not request.data.get("vehicle"):
         return JsonResponse(
-            {"message": "Vehicle ID is required"}, status=status.HTTP_400_BAD_REQUEST
+            {"message": "El ID del vehiculo es requerido"}, status=status.HTTP_400_BAD_REQUEST
         )
 
     try:
         vehicle = Vehicle.objects.get(id=request.data.get("vehicle"), owner=user)
     except Vehicle.DoesNotExist:
         return JsonResponse(
-            {"message": "Vehicle does not exist for this user"},
+            {"message": "El vehiculo no existe o no pertenece al usuario"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -34,7 +34,7 @@ def create_trip(request):
         active_trip = user.get_active_trip()
 
         return JsonResponse(
-            {"message": f"User already has an active trip (ID: {active_trip.id})"},
+            {"message": f"El usuario ya tiene un viaje activo: {active_trip.id}"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -57,7 +57,7 @@ def get_current_trip(request):
 
     if not user.has_active_trip():
         return JsonResponse(
-            {"message": "User does not have an active trip"},
+            {"message": "El usuario no tiene un viaje activo"},
             status=status.HTTP_404_NOT_FOUND,
         )
 
@@ -81,7 +81,7 @@ def get_available_trips(request):
 
     if user.has_active_trip():
         return JsonResponse(
-            {"message": "User already has an active trip"},
+            {"message": "El usuario ya tiene un viaje activo"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -139,18 +139,19 @@ def send_offer(request, trip_id):
         trip = Trip.objects.get(id=trip_id)
     except Trip.DoesNotExist:
         return JsonResponse(
-            {"message": "Trip does not exist"}, status=status.HTTP_400_BAD_REQUEST
+            {"message": "El viaje no existe"},
+            status=status.HTTP_400_BAD_REQUEST
         )
 
     if user.has_active_trip():
         return JsonResponse(
-            {"message": "User already has an active trip"},
+            {"message": "El usuario ya tiene un viaje activo"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
     if trip.offer_set.filter(passenger_id=user.id).exists():
         return JsonResponse(
-            {"message": "User already has an offer for this trip"},
+            {"message": "El usuario ya envió una oferta para este viaje"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -174,19 +175,19 @@ def accept_offer(request, trip_id, offer_id):
 
     if not user.has_active_trip():
         return JsonResponse(
-            {"message": "User does not have an active trip"},
+            {"message": "El usuario no tiene un viaje activo"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
     if not user.currently_driver or user.current_trip_driver is None:
         return JsonResponse(
-            {"message": "User is not a driver right now"},
+            {"message": "El usuario no es conductor en este momento"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
     if user.current_trip_driver.id != trip_id:
         return JsonResponse(
-            {"message": "User is not the driver of this trip"},
+            {"message": "El usuario no es conductor de este viaje"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -194,7 +195,8 @@ def accept_offer(request, trip_id, offer_id):
         offer = user.current_trip_driver.offer_set.get(id=offer_id)
     except Offer.DoesNotExist:
         return JsonResponse(
-            {"message": "Offer does not exist"}, status=status.HTTP_400_BAD_REQUEST
+            {"message": "La oferta no existe"},
+            status=status.HTTP_400_BAD_REQUEST
         )
 
     try:
@@ -213,19 +215,19 @@ def reject_offer(request, trip_id, offer_id):
 
     if not user.has_active_trip():
         return JsonResponse(
-            {"message": "User does not have an active trip"},
+            {"message": "El usuario no tiene un viaje activo"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
     if not user.currently_driver or user.current_trip_driver is None:
         return JsonResponse(
-            {"message": "User is not a driver right now"},
+            {"message": "El usuario no es conductor en este momento"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
     if user.current_trip_driver.id != trip_id:
         return JsonResponse(
-            {"message": "User is not the driver of this trip"},
+            {"message": "El usuario no es conductor de este viaje"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -233,7 +235,8 @@ def reject_offer(request, trip_id, offer_id):
         offer = user.current_trip_driver.offer_set.get(id=offer_id)
     except Offer.DoesNotExist:
         return JsonResponse(
-            {"message": "Offer does not exist"}, status=status.HTTP_400_BAD_REQUEST
+            {"message": "La oferta no existe"},
+            status=status.HTTP_400_BAD_REQUEST
         )
 
     try:
@@ -241,7 +244,10 @@ def reject_offer(request, trip_id, offer_id):
     except ValueError as e:
         return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    return JsonResponse({"message": "Offer rejected"}, status=status.HTTP_200_OK)
+    return JsonResponse(
+        {"message": "Oferta rechazada"},
+        status=status.HTTP_200_OK
+    )
 
 
 @api_view(["POST"])
@@ -251,19 +257,19 @@ def finish_trip_as_passenger(request, trip_id):
 
     if not user.has_active_trip():
         return JsonResponse(
-            {"message": "User does not have an active trip"},
+            {"message": "El usuario no tiene un viaje activo"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
     if not user.currently_passenger or user.current_offer_passenger is None:
         return JsonResponse(
-            {"message": "User is not a passenger right now"},
+            {"message": "El usuario no es pasajero en este momento"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
     if user.current_offer_passenger.trip.id != trip_id:
         return JsonResponse(
-            {"message": "User is not a passenger of this trip"},
+            {"message": "El usuario no es pasajero de este viaje"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -271,7 +277,7 @@ def finish_trip_as_passenger(request, trip_id):
 
     if not stars:
         return JsonResponse(
-            {"message": "Stars to driver are required"},
+            {"message": "Las estrellas al conductor son requeridas"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -285,9 +291,15 @@ def finish_trip_as_passenger(request, trip_id):
 
     try:
         trip.finish()
-        return JsonResponse({"message": "Trip finished"}, status=status.HTTP_200_OK)
+        return JsonResponse(
+            {"message": "Viaje finalizado"},
+            status=status.HTTP_200_OK
+        )
     except ValueError as _:
-        return JsonResponse({"message": "Trip finished"}, status=status.HTTP_200_OK)
+        return JsonResponse(
+            {"message": "Viaje finalizado"},
+            status=status.HTTP_200_OK
+        )
 
 
 @api_view(["POST"])
@@ -297,13 +309,13 @@ def remove_user_from_trip(request, trip_id, user_id):
 
     if not user.has_active_trip():
         return JsonResponse(
-            {"message": "User does not have an active trip"},
+            {"message": "El usuario no tiene un viaje activo"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
     if not user.currently_driver or user.current_trip_driver is None:
         return JsonResponse(
-            {"message": "User is not a driver right now"},
+            {"message": "El usuario no es conductor en este momento"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -311,7 +323,7 @@ def remove_user_from_trip(request, trip_id, user_id):
 
     if not stars:
         return JsonResponse(
-            {"message": "Stars to user are required"},
+            {"message": "Las estrellas al usuario son requeridas"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -319,19 +331,19 @@ def remove_user_from_trip(request, trip_id, user_id):
         user_to_remove = User.objects.get(id=user_id)
     except User.DoesNotExist:
         return JsonResponse(
-            {"message": "User to remove does not exist"},
+            {"message": "El usuario a remover no existe"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
     if user_to_remove.current_offer_passenger is None:
         return JsonResponse(
-            {"message": "User to remove is not a passenger right now"},
+            {"message": "El usuario a remover no es pasajero de este viaje"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
     if user_to_remove.current_offer_passenger.trip.id != trip_id:
         return JsonResponse(
-            {"message": "User to remove is not a passenger of this trip"},
+            {"message": "El usuario a remover no es pasajero de este viaje"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -339,7 +351,7 @@ def remove_user_from_trip(request, trip_id, user_id):
 
     if offer.trip != user.current_trip_driver:
         return JsonResponse(
-            {"message": "User to remove is not a passenger of this trip"},
+            {"message": "El usuario a remover no es pasajero de este viaje"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -352,10 +364,14 @@ def remove_user_from_trip(request, trip_id, user_id):
 
     try:
         trip.finish()
-        return JsonResponse({"message": "Trip finished"}, status=status.HTTP_200_OK)
+        return JsonResponse(
+            {"message": "Viaje finalizado"},
+            status=status.HTTP_200_OK
+        )
     except ValueError as _:
         return JsonResponse(
-            {"message": "User removed from trip"}, status=status.HTTP_200_OK
+            {"message": "Usuario removido del viaje"},
+            status=status.HTTP_200_OK
         )
 
 
@@ -375,7 +391,7 @@ def rate_passenger_as_driver(request, trip_id, user_id):
 
     if trip.vehicle.owner.id != user.id:
         return JsonResponse(
-            {"message": "User is not the driver of this trip"},
+            {"message": "El usuario no es el conductor de este viaje"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -383,7 +399,7 @@ def rate_passenger_as_driver(request, trip_id, user_id):
         offer = Offer.objects.get(trip_id=trip_id, passenger_id=user_id)
     except Offer.DoesNotExist:
         return JsonResponse(
-            {"message": "Passenger is not a passenger of this trip"},
+            {"message": "El usuario no es pasajero de este viaje"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -392,7 +408,10 @@ def rate_passenger_as_driver(request, trip_id, user_id):
     except ValueError as e:
         return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    return JsonResponse({"message": "Passenger rated"}, status=status.HTTP_200_OK)
+    return JsonResponse(
+        {"message": "Pasajero calificado"},
+        status=status.HTTP_200_OK
+    )
 
 
 @api_view(["POST"])
@@ -406,7 +425,8 @@ def rate_driver_as_passenger(request, trip_id):
         trip = Trip.objects.get(id=trip_id)
     except Trip.DoesNotExist:
         return JsonResponse(
-            {"message": "Trip does not exist"}, status=status.HTTP_400_BAD_REQUEST
+            {"message": "El viaje no existe"},
+            status=status.HTTP_400_BAD_REQUEST
         )
 
     try:
@@ -420,7 +440,7 @@ def rate_driver_as_passenger(request, trip_id):
 
     except Offer.DoesNotExist:
         return JsonResponse(
-            {"message": "User is not a passenger of this trip"},
+            {"message": "El usuario no es pasajero de este viaje"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -429,4 +449,7 @@ def rate_driver_as_passenger(request, trip_id):
     except ValueError as e:
         return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    return JsonResponse({"message": "Driver rated"}, status=status.HTTP_200_OK)
+    return JsonResponse(
+        {"message": "Conductor calificado"},
+        status=status.HTTP_200_OK
+    )

@@ -18,7 +18,8 @@ def login(request):
 
     if not user.is_active:
         return JsonResponse(
-            data={"error": "User is not active"}, status=status.HTTP_400_BAD_REQUEST
+            data={"error": "El usuario no está activo"},
+            status=status.HTTP_400_BAD_REQUEST
         )
 
     serializer = UserSerializer(user)
