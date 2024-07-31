@@ -29,7 +29,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS = ["rest_framework_simplejwt", "rest_framework", "corsheaders", "whitenoise.runserver_nostatic"]
+THIRD_PARTY_APPS = ["rest_framework_simplejwt", "rest_framework", "corsheaders"]
 
 PROJECT_APPS = ["accounts", "core"]
 
@@ -37,7 +37,6 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -147,10 +146,6 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "America/Bogota"
 USE_I18N = True
 USE_TZ = True
-
-STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
