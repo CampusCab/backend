@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("SECRET_KEY", default=env("SECRET_KEY"))
 
-DEBUG = "RENDER" not in os.environ
+DEBUG = os.environ.get("DEBUG", default=False)
 
 ALLOWED_HOSTS = ["*"]
 
@@ -128,24 +128,16 @@ if DEBUG:
 else:
     DATABASES = {
         "default": dj_database_url.config(
-            default="postgresql://postgres:postgres@localhost:5432/campuscab",
+            default=os.environ.get("DATABASE_URL"),
             conn_max_age=600,
         )
     }
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 REST_FRAMEWORK = {
