@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("SECRET_KEY", default=env("SECRET_KEY"))
 
-DEBUG_ENV = os.environ.get("DEBUG", default=False)
+DEBUG_ENV = os.environ.get("DEBUG", default="False")
 DEBUG = DEBUG_ENV == "True"
 
 ALLOWED_HOSTS = ["*"]
@@ -29,7 +29,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS = ["rest_framework_simplejwt", "rest_framework", "corsheaders"]
+THIRD_PARTY_APPS = ["rest_framework_simplejwt", "rest_framework", "corsheaders", "whitenoise.runserver_nostatic"]
 
 PROJECT_APPS = ["accounts", "core"]
 
@@ -149,10 +149,8 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
-
-if not DEBUG:
-    STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
