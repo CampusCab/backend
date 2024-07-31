@@ -1,1 +1,1 @@
-web: python manage.py migrate && gunicorn campuscab.wsgi:application --log-file -
+web: python manage.py collectstatic && python manage.py migrate && gunicorn campuscab.wsgi:application --log-file -
