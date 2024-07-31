@@ -11,8 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("SECRET_KEY", default=env("SECRET_KEY"))
 
-DEBUG_ENV = os.environ.get("DEBUG", default="False")
-DEBUG = DEBUG_ENV == "True"
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
