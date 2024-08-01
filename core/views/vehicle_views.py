@@ -21,7 +21,15 @@ def get_user_vehicles(request):
 @permission_classes([IsAuthenticated])
 def get_vehicle(request, vehicle_id):
     user = request.user
-    vehicle = user.vehicle_set.get(id=vehicle_id)
+
+    try:
+        vehicle = user.vehicle_set.get(id=vehicle_id)
+    except:
+        return JsonResponse(
+            {"error": "Vehiculo no encontrado"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
     vehicle = VehicleSerializer(vehicle)
 
     return JsonResponse(vehicle.data, status=status.HTTP_200_OK)
@@ -45,7 +53,14 @@ def create_vehicle(request):
 @permission_classes([IsAuthenticated])
 def update_vehicle(request, vehicle_id):
     user = request.user
-    vehicle = user.vehicle_set.get(id=vehicle_id)
+
+    try:
+        vehicle = user.vehicle_set.get(id=vehicle_id)
+    except:
+        return JsonResponse(
+            {"error": "Vehiculo no encontrado"},
+            status=status.HTTP_404_NOT_FOUND
+        )
 
     serializer = VehicleSerializer(vehicle, data=request.data, partial=True)
 
