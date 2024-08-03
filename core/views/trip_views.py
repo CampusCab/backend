@@ -155,6 +155,12 @@ def send_offer(request, trip_id):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
+    if trip.finished:
+        return JsonResponse(
+            data={"message": "El viaje ya finalizó"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
     data = request.data | {"trip": trip.id, "passenger_id": user.id}
     serializer = OfferSerializer(data=data)
 
@@ -439,6 +445,12 @@ def rate_driver_as_passenger(request, trip_id):
                 break
 
     except Offer.DoesNotExist:
+        return JsonResponse(
+            {"message": "El usuario no es pasajero de este viaje"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if offer is None:
         return JsonResponse(
             {"message": "El usuario no es pasajero de este viaje"},
             status=status.HTTP_400_BAD_REQUEST,
