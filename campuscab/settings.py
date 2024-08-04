@@ -28,7 +28,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS = ["rest_framework_simplejwt", "rest_framework", "corsheaders", "whitenoise.runserver_nostatic"]
+THIRD_PARTY_APPS = ["corsheaders", "rest_framework_simplejwt", "rest_framework", "whitenoise.runserver_nostatic"]
 
 PROJECT_APPS = ["accounts", "core"]
 
@@ -36,9 +36,9 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
