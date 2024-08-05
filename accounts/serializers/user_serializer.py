@@ -42,7 +42,6 @@ class UserSerializer(ModelSerializer):
             "password",
             "first_name",
             "last_name",
-            "gender",
             "total_stars_driver",
             "total_trips_driver",
             "rating_driver",
