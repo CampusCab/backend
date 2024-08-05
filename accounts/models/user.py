@@ -36,7 +36,6 @@ class User(AbstractUser):
     phone = models.CharField(blank=False, unique=True, max_length=20)
     first_name = models.CharField(blank=False, max_length=50)
     last_name = models.CharField(blank=False, max_length=50)
-    gender = models.CharField(blank=True, max_length=1)
     is_active = models.BooleanField(default=False)
     verification_code = models.CharField(blank=True, null=True, max_length=6)
 

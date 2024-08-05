@@ -17,7 +17,6 @@ class UserSerializer(ModelSerializer):
     last_name = serializers.CharField(
         error_messages={"required": "Ingresa tu apellido"}
     )
-    gender = serializers.CharField(required=False)
 
     # Write only fields
     password = serializers.CharField(write_only=True)
