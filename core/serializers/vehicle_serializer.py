@@ -10,6 +10,9 @@ class VehicleSerializer(ModelSerializer):
         queryset=User.objects.all(), write_only=True
     )
     license = serializers.CharField(error_messages={"required": "Ingresa la placa"})
+    vehicle_type = serializers.CharField(
+        error_messages={"required": "Ingresa el tipo de vehículo"}
+    )
     model = serializers.CharField(error_messages={"required": "Ingresa el modelo"})
     max_passengers = serializers.IntegerField(
         error_messages={"required": "Ingresa el número máximo de pasajeros"}
@@ -17,7 +20,7 @@ class VehicleSerializer(ModelSerializer):
 
     class Meta:
         model = Vehicle
-        fields = ["id", "owner", "license", "model", "max_passengers"]
+        fields = ["id", "owner", "license", "type", "model", "max_passengers"]
 
     def create(self, validated_data):
         vehicle = Vehicle.objects.create(**validated_data)
