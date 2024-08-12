@@ -49,7 +49,7 @@ def create_vehicle(request):
     return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(["PATCH"])
+@api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def update_vehicle(request, vehicle_id):
     user = request.user
