@@ -55,7 +55,7 @@ def get_profile(request):
     return JsonResponse(data, status=status.HTTP_201_CREATED)
 
 
-@api_view(["PATCH"])
+@api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def update_profile(request):
     user = request.user
