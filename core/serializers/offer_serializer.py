@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from accounts.models import User
 from ..models import Offer
 
 
@@ -43,6 +45,12 @@ class PastOffersDriverSerializer(serializers.ModelSerializer):
 
 
 class CurrentOfferSerializer(serializers.ModelSerializer):
+    # Get passenger_name
+    passenger_name = serializers.SerializerMethodField()
+
+    def get_passenger_name(self, obj):
+        return User.objects.get(id=obj.passenger_id).get_full_name()
+
     class Meta:
         model = Offer
-        fields = ["id", "passenger_id", "amount", "accepted", "finished"]
+        fields = ["id", "passenger_id", "passenger_name",  "amount", "accepted", "finished"]
