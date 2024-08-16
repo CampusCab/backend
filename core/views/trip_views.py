@@ -70,7 +70,7 @@ def get_current_trip(request):
         data = data | {"accepted": offer.accepted}
     elif user.currently_driver:
         offers = user.current_trip_driver.offer_set.all()
-        data = data | {"offers": CurrentOfferSerializer(offers, many=True).data} | {"capacity": user.current_trip_driver.vehicle.max_passengers } | {"vehicle": VehicleSerializer(user.current_trip_driver.vehicle).data }
+        data = data | {"offers": CurrentOfferSerializer(offers, many=True).data} | {"capacity": user.current_trip_driver.vehicle.max_passengers } | {"vehicle_info": VehicleSerializer(user.current_trip_driver.vehicle).data }
 
     return JsonResponse(data, status=status.HTTP_200_OK)
 
