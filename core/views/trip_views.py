@@ -10,6 +10,7 @@ from ..serializers.trip_serializer import (
     PastTripPassengerSerializer,
     PastTripDriverSerializer,
 )
+from ..serializers.vehicle_serializer import VehicleSerializer
 
 
 @api_view(["POST"])
@@ -69,7 +70,7 @@ def get_current_trip(request):
         data = data | {"accepted": offer.accepted}
     elif user.currently_driver:
         offers = user.current_trip_driver.offer_set.all()
-        data = data | {"offers": CurrentOfferSerializer(offers, many=True).data} | {"capacity": user.current_trip_driver.vehicle.max_passengers }
+        data = data | {"offers": CurrentOfferSerializer(offers, many=True).data} | {"capacity": user.current_trip_driver.vehicle.max_passengers } | {"vehicle": VehicleSerializer(user.current_trip_driver.vehicle).data }
 
     return JsonResponse(data, status=status.HTTP_200_OK)
 
