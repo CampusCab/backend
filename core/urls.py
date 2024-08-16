@@ -32,15 +32,15 @@ current_trip_patterns = [
         trip_views.reject_offer,
         name="reject_offer",
     ),
+    # path(
+    #     "trips/<int:trip_id>/finish",
+    #     trip_views.finish_trip_as_passenger,
+    #     name="finish_trip_as_passenger",
+    # ),
     path(
-        "trips/<int:trip_id>/finish",
-        trip_views.finish_trip_as_passenger,
-        name="finish_trip_as_passenger",
-    ),
-    path(
-        "trips/<int:trip_id>/remove/<int:user_id>",
-        trip_views.remove_user_from_trip,
-        name="remove_user_from_trip",
+        "trips/finish/<int:trip_id>",
+        trip_views.finish_trip_as_driver,
+        name="finish_trip_as_driver",
     ),
 ]
 

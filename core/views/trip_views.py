@@ -465,3 +465,50 @@ def rate_driver_as_passenger(request, trip_id):
         {"message": "Conductor calificado"},
         status=status.HTTP_200_OK
     )
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def finish_trip_as_driver(request, trip_id):
+    user: User = request.user
+
+    if not user.has_active_trip():
+        return JsonResponse(
+            {"message": "El usuario no tiene un viaje activo"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if not user.currently_driver or user.current_trip_driver is None:
+        return JsonResponse(
+            {"message": "El usuario no es conductor en este momento"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if user.current_trip_driver.id != trip_id:
+        return JsonResponse(
+            {"message": "El usuario no es conductor de este viaje"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # data came like this: [{"user_id": 1, "stars": 5}, {"user_id": 2, "stars": 4}]
+    req_data = request.data
+
+    if not req_data:
+        return JsonResponse(
+            {"message": "Las estrellas a los usuarios son requeridas"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    trip = user.current_trip_driver
+
+    try:
+        trip.finish(req_data)
+
+        return JsonResponse(
+            {"message": "Viaje finalizado"},
+            status=status.HTTP_200_OK
+        )
+    except ValueError as _:
+        return JsonResponse(
+            {"message": "Viaje finalizado"},
+            status=status.HTTP_200_OK
+        )

@@ -44,15 +44,17 @@ class Trip(models.Model):
         self.save()
         self.vehicle.owner.start_as_driver(self)
 
-    def finish(self):
+    def finish(self, data):
         if self.finished:
             raise ValueError("El viaje ya ha sido finalizado.")
 
         for offer in self.offer_set.all():
-            if not offer.finished:
-                raise ValueError(
-                    f"El viaje no puede ser finalizado porque el pasajero {offer.passenger} no ha finalizado su viaje."
-                )
+            # data is [{'user': 1, 'stars': 5}, {'user': 2, 'stars': 4}, ...]
+            # find the offer with the user id and set the stars
+            for user_data in data:
+                if offer.user.id == user_data["user"]:
+                    stars = user_data["stars"]
+                    offer.finish_by_driver(stars)
 
         self.finished = True
         self.vehicle.owner.current_trip_driver = None
