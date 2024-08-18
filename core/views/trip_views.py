@@ -177,7 +177,7 @@ def send_offer(request, trip_id):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def accept_offer(request, trip_id, offer_id):
+def accept_offer(request, offer_id):
     user: User = request.user
 
     if not user.has_active_trip():
@@ -189,12 +189,6 @@ def accept_offer(request, trip_id, offer_id):
     if not user.currently_driver or user.current_trip_driver is None:
         return JsonResponse(
             {"message": "El usuario no es conductor en este momento"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    if user.current_trip_driver.id != trip_id:
-        return JsonResponse(
-            {"message": "El usuario no es conductor de este viaje"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -217,7 +211,7 @@ def accept_offer(request, trip_id, offer_id):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def reject_offer(request, trip_id, offer_id):
+def reject_offer(request, offer_id):
     user: User = request.user
 
     if not user.has_active_trip():
@@ -229,12 +223,6 @@ def reject_offer(request, trip_id, offer_id):
     if not user.currently_driver or user.current_trip_driver is None:
         return JsonResponse(
             {"message": "El usuario no es conductor en este momento"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    if user.current_trip_driver.id != trip_id:
-        return JsonResponse(
-            {"message": "El usuario no es conductor de este viaje"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
