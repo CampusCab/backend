@@ -301,7 +301,6 @@ def finish_trip_as_passenger(request, trip_id):
 @permission_classes([IsAuthenticated])
 def remove_user_from_trip(request, user_id):
     user: User = request.user
-    trip_id = user.current_trip_driver.id
 
     if not user.has_active_trip():
         return JsonResponse(
@@ -320,18 +319,6 @@ def remove_user_from_trip(request, user_id):
     except User.DoesNotExist:
         return JsonResponse(
             {"message": "El usuario a remover no existe"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    if user_to_remove.current_offer_passenger is None:
-        return JsonResponse(
-            {"message": "El usuario a remover no es pasajero de este viaje"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    if user_to_remove.current_offer_passenger.trip.id != trip_id:
-        return JsonResponse(
-            {"message": "El usuario a remover no es pasajero de este viaje"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
