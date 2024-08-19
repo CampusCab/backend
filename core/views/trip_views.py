@@ -315,14 +315,6 @@ def remove_user_from_trip(request, user_id):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    stars = request.data.get("stars_to_user")
-
-    if not stars:
-        return JsonResponse(
-            {"message": "Las estrellas al usuario son requeridas"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
     try:
         user_to_remove = User.objects.get(id=user_id)
     except User.DoesNotExist:
@@ -352,7 +344,7 @@ def remove_user_from_trip(request, user_id):
         )
 
     try:
-        offer.finish_by_driver(stars)
+        offer.finish_by_driver()
     except ValueError as e:
         return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
