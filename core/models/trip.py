@@ -54,7 +54,7 @@ class Trip(models.Model):
             for user_data in data:
                 if offer.passenger_id == user_data["user"]:
                     stars = user_data["stars"]
-                    offer.finish_by_driver(stars)
+                    offer.finish_by_driver(stars, offer.passenger_id)
 
         self.finished = True
         self.vehicle.owner.current_trip_driver = None

@@ -64,13 +64,13 @@ class Offer(models.Model):
         self.stars_to_driver = stars_to_driver
         self.save()
 
-    def finish_by_driver(self, stars_to_user):
+    def finish_by_driver(self, stars_to_user, user_id):
         if not self.accepted:
             raise ValueError("La oferta no ha sido aceptada.")
         if self.finished:
             raise ValueError("La oferta ya ha sido finalizada.")
 
-        passenger = User.objects.get(current_offer_passenger_id=self.id)
+        passenger = User.objects.get(id=user_id)
         passenger.total_trips_passenger += 1
         passenger.total_stars_passenger += stars_to_user
         passenger.rating_passenger = (
