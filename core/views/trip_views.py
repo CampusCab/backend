@@ -329,19 +329,10 @@ def remove_user_from_trip(request, user_id):
     except ValueError as e:
         return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    trip = user.current_trip_driver
-
-    try:
-        trip.finish()
-        return JsonResponse(
-            {"message": "Viaje finalizado"},
-            status=status.HTTP_200_OK
-        )
-    except ValueError as _:
-        return JsonResponse(
-            {"message": "Usuario removido del viaje"},
-            status=status.HTTP_200_OK
-        )
+    return JsonResponse(
+        {"message": "Usuario removido del viaje"},
+        status=status.HTTP_200_OK
+    )
 
 
 @api_view(["POST"])
