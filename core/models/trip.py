@@ -52,8 +52,8 @@ class Trip(models.Model):
             # data is [{'user': 1, 'stars': 5}, {'user': 2, 'stars': 4}, ...]
             # find the offer with the user id and set the stars
             for user_data in data:
-                if offer.user.id == user_data["user"]:
-                    stars = user_data["stars"]
+                if offer.passenger_id == user_data["user"]:
+                    stars = user_data["stars"]s
                     offer.finish_by_driver(stars)
 
         self.finished = True
