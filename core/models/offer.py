@@ -64,7 +64,7 @@ class Offer(models.Model):
         self.stars_to_driver = stars_to_driver
         self.save()
 
-    def finish_by_driver(self):
+    def finish_by_driver(self, stars_to_user):
         if not self.accepted:
             raise ValueError("La oferta no ha sido aceptada.")
         if self.finished:
@@ -72,6 +72,10 @@ class Offer(models.Model):
 
         passenger = User.objects.get(current_offer_passenger_id=self.id)
         passenger.total_trips_passenger += 1
+        passenger.total_stars_passenger += stars_to_user
+        passenger.rating_passenger = (
+            passenger.total_stars_passenger / passenger.total_trips_passenger
+        )
         passenger.current_offer_passenger = None
         passenger.currently_passenger = False
         passenger.save()
