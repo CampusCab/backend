@@ -299,8 +299,9 @@ def finish_trip_as_passenger(request, trip_id):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def remove_user_from_trip(request, trip_id, user_id):
+def remove_user_from_trip(request, user_id):
     user: User = request.user
+    trip_id = user.current_trip_driver.id
 
     if not user.has_active_trip():
         return JsonResponse(

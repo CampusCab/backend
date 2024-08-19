@@ -34,6 +34,11 @@ current_trip_patterns = [
         trip_views.finish_trip_as_driver,
         name="finish_trip_as_driver",
     ),
+    path(
+        "trips/remove/<int:user_id>",
+        trip_views.remove_user_from_trip,
+        name="remove_user_from_trip",
+    ),
 ]
 
 rate_patterns = [
