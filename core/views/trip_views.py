@@ -324,12 +324,6 @@ def remove_user_from_trip(request, user_id):
 
     offer = user_to_remove.current_offer_passenger
 
-    if offer.trip != user.current_trip_driver:
-        return JsonResponse(
-            {"message": "El usuario a remover no es pasajero de este viaje"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
     try:
         offer.finish_by_driver()
     except ValueError as e:
