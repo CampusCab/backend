@@ -99,9 +99,10 @@ def get_available_trips(request):
     for trip in data:
         trip_obj = Trip.objects.get(id=trip["id"])
         capacity = trip_obj.vehicle.max_passengers
+        offers = OfferSerializer(trip_obj.offer_set.all(), many=True).data
         driver_info = UserSerializer(User.objects.get(id=trip_obj.vehicle.owner.id)).data
 
-        new_trip = trip | {"capacity": capacity} | {"driver_info": driver_info}
+        new_trip = trip | {"capacity": capacity} | {"driver_info": driver_info} | {"offers": offers}
         response.append(new_trip)
 
     return JsonResponse(response, safe=False, status=status.HTTP_200_OK)
