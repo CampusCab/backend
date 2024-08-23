@@ -70,7 +70,9 @@ def get_current_trip(request):
         data = data | {"accepted": offer.accepted}
     elif user.currently_driver:
         offers = user.current_trip_driver.offer_set.all()
-        data = data | {"offers": CurrentOfferSerializer(offers, many=True).data} | {"capacity": user.current_trip_driver.vehicle.max_passengers } | {"vehicle_info": VehicleSerializer(user.current_trip_driver.vehicle).data }
+        data = data | {"offers": CurrentOfferSerializer(offers, many=True).data} | {
+            "capacity": user.current_trip_driver.vehicle.max_passengers} | {
+                   "vehicle_info": VehicleSerializer(user.current_trip_driver.vehicle).data}
 
     return JsonResponse(data, status=status.HTTP_200_OK)
 
@@ -89,7 +91,13 @@ def get_available_trips(request):
     trips = Trip.get_available_trips()
     serializer = TripSerializer(trips, many=True)
 
-    return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
+    data = (
+        serializer.data |
+        {"capacity": user.current_trip_driver.vehicle.max_passengers} |
+        {"vehicle_info": VehicleSerializer(user.current_trip_driver.vehicle).data}
+    )
+
+    return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
@@ -419,6 +427,7 @@ def rate_driver_as_passenger(request, trip_id):
         {"message": "Conductor calificado"},
         status=status.HTTP_200_OK
     )
+
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
