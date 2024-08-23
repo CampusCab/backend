@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import User
+from accounts.serializers import UserSerializer
 from ..models import Vehicle, Trip, Offer
 from ..serializers.offer_serializer import OfferSerializer, CurrentOfferSerializer
 from ..serializers.trip_serializer import (
@@ -91,13 +92,16 @@ def get_available_trips(request):
     trips = Trip.get_available_trips()
     serializer = TripSerializer(trips, many=True)
 
-    data = (
-        serializer.data |
-        {"capacity": user.current_trip_driver.vehicle.max_passengers} |
-        {"vehicle_info": VehicleSerializer(user.current_trip_driver.vehicle).data}
-    )
+    data = serializer.data
 
-    return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
+    response = []
+
+    for trip in data:
+        new_trip = trip | {"capacity": trip["vehicle"]["max_passengers"]}
+        new_trip = new_trip | {"driver_info": UserSerializer(User.objects.get(id=trip["vehicle"]["owner"])).data}
+        response.append(new_trip)
+
+    return JsonResponse(response, safe=False, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
