@@ -109,23 +109,27 @@ class Offer(models.Model):
         self.save()
 
     def rate_driver(self, stars_to_driver):
-        if not self.finished:
-            raise ValueError("La oferta no ha sido finalizada.")
-
         if self.finished_by == "P":
             raise ValueError(
                 "La oferta fue finalizada por el pasajero, el conductor ya fue calificado."
             )
 
         self.stars_to_driver = stars_to_driver
+        self.finished = True
+        self.finished_by = "P"
         self.save()
 
         driver = self.trip.vehicle.owner
         driver.total_stars_driver += stars_to_driver
         driver.total_trips_driver += 1
         driver.rating_driver = driver.total_stars_driver / driver.total_trips_driver
-
         driver.save()
+
+        user = User.objects.get(current_offer_passenger_id=self.id)
+        user.current_offer_passenger = None
+        user.currently_passenger = False
+        user.save()
+
         self.save()
 
     def __str__(self):
