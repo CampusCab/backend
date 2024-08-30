@@ -43,7 +43,7 @@ current_trip_patterns = [
 
 rate_patterns = [
     path(
-        "trips/<int:trip_id>/rate",
+        "trips/rate",
         trip_views.rate_driver_as_passenger,
         name="rate_driver_as_passenger",
     ),
