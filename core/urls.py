@@ -21,7 +21,7 @@ general_trip_patterns = [
 ]
 
 current_trip_patterns = [
-    path("trips/<int:trip_id>/offer", trip_views.send_offer, name="send_offer"),
+    path("trips/offer/<int:trip_id>", trip_views.send_offer, name="send_offer"),
     path("trips/accept/<int:offer_id>", trip_views.accept_offer, name="accept_offer"),
     path("trips/reject/<int:offer_id>", trip_views.reject_offer, name="reject_offer"),
     # path(
