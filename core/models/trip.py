@@ -57,10 +57,12 @@ class Trip(models.Model):
                     offer.finish_by_driver(stars, offer.passenger_id)
 
         self.finished = True
-        self.vehicle.owner.current_trip_driver = None
-        self.vehicle.owner.currently_driver = False
+        driver = self.vehicle.owner
 
-        self.vehicle.owner.save()
+        driver.current_trip_driver = None
+        driver.currently_driver = False
+        driver.save()
+
         self.save()
 
     def __str__(self):
