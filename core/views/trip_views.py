@@ -391,13 +391,13 @@ def rate_passenger_as_driver(request, trip_id, user_id):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def rate_driver_as_passenger(request, trip_id):
+def rate_driver_as_passenger(request):
     user: User = request.user
 
     stars = request.data.get("stars")
 
     try:
-        trip = Trip.objects.get(id=trip_id)
+        trip = user.current_offer_passenger.trip
     except Trip.DoesNotExist:
         return JsonResponse(
             {"message": "El viaje no existe"},
