@@ -473,6 +473,10 @@ def finish_trip_as_driver(request, trip_id):
     try:
         trip.finish(req_data)
 
+        user.currently_driver = False
+        user.current_trip_driver = None
+        user.save()
+
         return JsonResponse(
             {"message": "Viaje finalizado"},
             status=status.HTTP_200_OK
