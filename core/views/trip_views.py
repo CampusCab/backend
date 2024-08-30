@@ -83,12 +83,6 @@ def get_current_trip(request):
 def get_available_trips(request):
     user: User = request.user
 
-    if user.has_active_trip():
-        return JsonResponse(
-            {"message": "El usuario ya tiene un viaje activo"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
     trips = Trip.get_available_trips()
     serializer = TripSerializer(trips, many=True)
 
