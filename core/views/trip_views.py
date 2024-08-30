@@ -69,7 +69,8 @@ def get_current_trip(request):
     if user.currently_passenger:
         offer = user.current_offer_passenger
         other_offers = offer.trip.offer_set
-        data = data | {"accepted": offer.accepted} | {"offers": OfferSerializer(other_offers, many=True).data} | { "capacity": offer.trip.vehicle.max_passengers} | {
+
+        data = data | {"accepted": offer.accepted} | {"offers": CurrentOfferSerializer(other_offers, many=True).data} | { "capacity": offer.trip.vehicle.max_passengers} | {
             "vehicle_info": VehicleSerializer(offer.trip.vehicle).data}
     elif user.currently_driver:
         offers = user.current_trip_driver.offer_set.all()
