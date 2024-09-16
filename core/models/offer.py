@@ -70,9 +70,7 @@ class Offer(models.Model):
 
         passenger = User.objects.get(id=user_id)
 
-        if not self.finished:
-            passenger.total_trips_passenger += 1
-
+        passenger.total_trips_passenger += 1
         passenger.total_stars_passenger += stars_to_user
         passenger.rating_passenger = (
             passenger.total_stars_passenger / passenger.total_trips_passenger
